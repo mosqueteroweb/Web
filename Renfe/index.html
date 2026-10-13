@@ -105,29 +105,27 @@
 
             <!-- Contenedor del Detalle del Tren Consultado -->
             <div id="trainDetailContainer" class="train-detail-container" style="display: none;">
-                <!-- Tarjeta Principal del Tren -->
-                <div class="detail-card" id="detailCard">
-                    <!-- Cabecera del tren -->
-                    <div class="detail-header">
-                        <div class="detail-title-group">
-                            <div class="product-badge" id="detailProductBadge">AVE</div>
-                            <div>
-                                <h2 class="train-number" id="detailTrainNumber">Tren #02143</h2>
-                                <p class="train-service-name" id="detailServiceName">Alta Velocidad Española</p>
-                            </div>
-                        </div>
-
-                        <div class="detail-header-right">
-                            <button type="button" class="btn-action" id="btnShare" onclick="app.shareTrain()" title="Copiar enlace directo de este tren" aria-label="Copiar enlace directo">
-                                <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2.2" fill="none"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg>
-                                <span id="shareBtnText">Compartir</span>
-                            </button>
+                <!-- Tarjeta de Cabecera del Tren -->
+                <div class="senior-card detail-header-card">
+                    <div class="detail-title-group">
+                        <div class="product-badge" id="detailProductBadge">AVE</div>
+                        <div>
+                            <h2 class="train-number" id="detailTrainNumber">Tren #02143</h2>
+                            <p class="train-service-name" id="detailServiceName">Alta Velocidad Española</p>
                         </div>
                     </div>
 
-                    <!-- TARJETA 1: TRAYECTO (ORIGEN Y DESTINO COMBINADOS, MÁX. 15 CARACTERES) -->
-                    <div class="senior-card route-card">
-                        <div class="senior-card-label">TRAYECTO</div>
+                    <div class="detail-header-right">
+                        <button type="button" class="btn-action" id="btnShare" onclick="app.shareTrain()" title="Copiar enlace directo de este tren" aria-label="Copiar enlace directo">
+                            <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2.2" fill="none"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg>
+                            <span id="shareBtnText">Compartir</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- TARJETA 1: TRAYECTO (ORIGEN Y DESTINO COMBINADOS, MÁX. 15 CARACTERES) -->
+                <div class="senior-card route-card">
+                    <div class="senior-card-label">TRAYECTO</div>
                         <div class="route-display">
                             <div class="route-point">
                                 <span class="point-badge">SALIDA</span>
@@ -219,7 +217,6 @@
                             </div>
                         </div>
                     </details>
-                </div>
             </div>
 
             <!-- Estado Vacío Inicial -->

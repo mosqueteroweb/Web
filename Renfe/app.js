@@ -240,72 +240,75 @@ function getStationName(code) {
     return `Estación (${cleanCode})`;
 }
 
-// Diccionario de abreviaturas legibles y directas para mayores (+80 años)
-const STATION_ABBREVIATIONS = {
-    'Madrid - Puerta de Atocha - Almudena Grandes': 'Madrid Atocha',
-    'Madrid Puerta de Atocha - Almudena Grandes': 'Madrid Atocha',
-    'Madrid-Puerta De Atocha': 'Madrid Atocha',
-    'Madrid Puerta De Atocha': 'Madrid Atocha',
-    'Madrid Chamartin': 'M. Chamartín',
-    'Madrid - Chamartín - Clara Campoamor': 'M. Chamartín',
-    'Madrid Chamartín Clara Campoamor': 'M. Chamartín',
-    'Madrid-Chamartín-Clara Campoamor': 'M. Chamartín',
-    'Madrid Chamartin Clara Campoamor': 'M. Chamartín',
-    'Barcelona Sants': 'Barcelona Sants',
-    'Barcelona - Sants': 'Barcelona Sants',
-    'Barcelona Estacio De Franca': 'Barna França',
-    'Barcelona-Estació de França': 'Barna França',
-    'Figueres - Vilafant': 'Figueres Vil.',
-    'Figueres Vilafant': 'Figueres Vil.',
-    'Valencia Joaquin Sorolla': 'Valencia J.S.',
-    'Valencia - Joaquín Sorolla': 'Valencia J.S.',
-    'Valencia Joaquín Sorolla': 'Valencia J.S.',
-    'Sevilla Santa Justa': 'Sevilla S.J.',
-    'Sevilla - Santa Justa': 'Sevilla S.J.',
-    'Valladolid Campo Grande': 'Valladolid',
-    'Valladolid - Campo Grande': 'Valladolid',
-    'Zaragoza Delicias': 'Zaragoza Del.',
-    'Zaragoza - Delicias': 'Zaragoza Del.',
-    'Alicante/Alacant': 'Alicante',
-    'Alicante - Terminal': 'Alicante',
-    'Castellon De La Plana': 'Castellón',
-    'Castelló De La Plana': 'Castellón',
-    'Santiago De Compostela': 'Santiago Comp.',
-    'A Coruña': 'A Coruña',
-    'San Sebastian / Donostia': 'San Sebastián',
-    'Bilbao Abando Indalecio Prieto': 'Bilbao Abando',
-    'Cordoba Central': 'Córdoba',
-    'Malaga Maria Zambrano': 'Málaga M.Z.',
-    'Málaga - María Zambrano': 'Málaga M.Z.'
-};
-
 /**
- * Garantiza estrictamente que el nombre de la estación tenga MÁXIMO 15 caracteres
- * para visualización óptima en pantallas senior (+80 años).
+ * Formatea y acorta nombres de estaciones para personas mayores (+80 años):
+ * - Estrictamente MÁXIMO 15 caracteres.
+ * - Nombres limpios e intuitivos sin cortes bruscos ("Figueres" en vez de "Figueres-Vilafa",
+ *   "Madrid Atocha" en vez de "Madrid-Puerta D").
  */
 function formatStationMax15(code) {
-    let name = getStationName(code);
-    if (!name) return '--';
+    let raw = getStationName(code);
+    if (!raw) return '--';
     
-    // Mapeo conocido
-    if (STATION_ABBREVIATIONS[name]) {
-        name = STATION_ABBREVIATIONS[name];
-    }
+    const lower = raw.toLowerCase().replace(/[-_/]/g, ' ');
     
-    // Si aún supera 15 caracteres, acortar limpiamente
-    if (name.length > 15) {
-        if (name.includes(' - ')) {
-            name = name.split(' - ')[0].trim();
-        } else if (name.includes('/')) {
-            name = name.split('/')[0].trim();
-        }
+    // Mapeo inteligente para ciudades y estaciones principales
+    if (lower.includes('atocha')) return 'Madrid Atocha';
+    if (lower.includes('chamartin') || lower.includes('chamartín')) return 'M. Chamartín';
+    if (lower.includes('sants')) return 'Barcelona Sants';
+    if (lower.includes('franca') || lower.includes('frança')) return 'Barna França';
+    if (lower.includes('figueres') || lower.includes('vilafant')) return 'Figueres';
+    if (lower.includes('sorolla')) return 'Valencia J.S.';
+    if (lower.includes('santa justa') || lower.includes('justa')) return 'Sevilla S.J.';
+    if (lower.includes('delicias') || lower.includes('zaragoza')) return 'Zaragoza Del.';
+    if (lower.includes('campo grande') || lower.includes('valladolid')) return 'Valladolid';
+    if (lower.includes('zambrano') || lower.includes('malaga') || lower.includes('málaga')) return 'Málaga M.Z.';
+    if (lower.includes('tarragona')) return 'Tarragona';
+    if (lower.includes('lleida') || lower.includes('lerida')) return 'Lleida';
+    if (lower.includes('girona') || lower.includes('gerona')) return 'Girona';
+    if (lower.includes('cordoba') || lower.includes('córdoba')) return 'Córdoba';
+    if (lower.includes('alicante') || lower.includes('alacant')) return 'Alicante';
+    if (lower.includes('castellon') || lower.includes('castelló')) return 'Castellón';
+    if (lower.includes('compostela')) return 'Santiago Comp.';
+    if (lower.includes('coruña')) return 'A Coruña';
+    if (lower.includes('abando') || lower.includes('bilbao')) return 'Bilbao';
+    if (lower.includes('donostia') || lower.includes('san sebastian')) return 'San Sebastián';
+    if (lower.includes('pamplona') || lower.includes('iruña')) return 'Pamplona';
+    if (lower.includes('santander')) return 'Santander';
+    if (lower.includes('oviedo')) return 'Oviedo';
+    if (lower.includes('gijon') || lower.includes('gijón')) return 'Gijón';
+    if (lower.includes('logroño')) return 'Logroño';
+    if (lower.includes('murcia')) return 'Murcia';
+    if (lower.includes('cadiz') || lower.includes('cádiz')) return 'Cádiz';
+    if (lower.includes('granada')) return 'Granada';
+    if (lower.includes('toledo')) return 'Toledo';
+    if (lower.includes('segovia')) return 'Segovia';
+    if (lower.includes('cuenca')) return 'Cuenca';
+    if (lower.includes('ourense') || lower.includes('orense')) return 'Ourense';
+    if (lower.includes('vigo')) return 'Vigo';
+    if (lower.includes('pontevedra')) return 'Pontevedra';
+    if (lower.includes('badajoz')) return 'Badajoz';
+    if (lower.includes('caceres') || lower.includes('cáceres')) return 'Cáceres';
+
+    // Regla general para cualquier otra estación
+    let cleaned = raw.split(/[-–—/]/)[0].trim();
+    if (cleaned.length > 15) {
+        cleaned = cleaned.substring(0, 15).trim();
     }
-    
-    // Garantía estricta e inviolable: máximo 15 caracteres
-    if (name.length > 15) {
-        name = name.substring(0, 15).trim();
+    return cleaned;
+}
+
+/**
+ * Nombre limpio para mostrar en listas y desplegables (sin sub-códigos largos).
+ */
+function cleanStationName(raw) {
+    if (!raw) return 'Estación';
+    // Si coincide con alguna ciudad principal, usar nombre limpio
+    const short = formatStationMax15(raw);
+    if (short !== '--' && short.length <= 15) {
+        return short;
     }
-    return name;
+    return raw.replace(/[-–—]\s*(Adif|Almudena|Clara|Campoamor).*/i, '').trim();
 }
 
 function getStationCoords(code) {
@@ -664,16 +667,15 @@ function renderTimeline(train, route) {
 
     stops.forEach((stop, index) => {
         const step = document.createElement('div');
-        const stName = getStationName(stop.p);
-        const st = state.stations[String(stop.p).trim()] || state.stations[String(stop.p).replace(/^0+/, '')];
-        const loc = st ? st.p : '';
+        const rawName = getStationName(stop.p);
+        const stName = cleanStationName(rawName);
 
         let statusClass = 'upcoming';
         let statusText = 'Pendiente';
 
         if (index < nextIndex) {
             statusClass = 'completed';
-            statusText = '✓ Parada realizada';
+            statusText = '✓ Realizada';
         } else if (index === nextIndex) {
             statusClass = 'current';
             statusText = '🚆 Próxima parada';
@@ -681,13 +683,12 @@ function renderTimeline(train, route) {
 
         step.className = `timeline-step ${statusClass}`;
         step.innerHTML = `
-            <div class="step-top">
-                <span class="step-station-name">${escapeHTML(stName)}</span>
-                <span class="step-time-badge">${escapeHTML(stop.h || stop.hs || '--:--')}</span>
-            </div>
-            <div class="step-meta">
-                <span>${loc ? escapeHTML(loc) + ' · ' : ''}Adif #${escapeHTML(stop.p)}</span>
-                <span class="step-status-tag">${escapeHTML(statusText)}</span>
+            <div class="step-row">
+                <div class="step-info">
+                    <span class="step-station-name">${escapeHTML(stName)}</span>
+                    <span class="step-status-badge ${statusClass}">${escapeHTML(statusText)}</span>
+                </div>
+                <div class="step-time-badge">${escapeHTML(stop.h || stop.hs || '--:--')}</div>
             </div>
         `;
 
