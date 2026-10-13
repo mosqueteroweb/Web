@@ -240,6 +240,74 @@ function getStationName(code) {
     return `Estación (${cleanCode})`;
 }
 
+// Diccionario de abreviaturas legibles y directas para mayores (+80 años)
+const STATION_ABBREVIATIONS = {
+    'Madrid - Puerta de Atocha - Almudena Grandes': 'Madrid Atocha',
+    'Madrid Puerta de Atocha - Almudena Grandes': 'Madrid Atocha',
+    'Madrid-Puerta De Atocha': 'Madrid Atocha',
+    'Madrid Puerta De Atocha': 'Madrid Atocha',
+    'Madrid Chamartin': 'M. Chamartín',
+    'Madrid - Chamartín - Clara Campoamor': 'M. Chamartín',
+    'Madrid Chamartín Clara Campoamor': 'M. Chamartín',
+    'Madrid-Chamartín-Clara Campoamor': 'M. Chamartín',
+    'Madrid Chamartin Clara Campoamor': 'M. Chamartín',
+    'Barcelona Sants': 'Barcelona Sants',
+    'Barcelona - Sants': 'Barcelona Sants',
+    'Barcelona Estacio De Franca': 'Barna França',
+    'Barcelona-Estació de França': 'Barna França',
+    'Figueres - Vilafant': 'Figueres Vil.',
+    'Figueres Vilafant': 'Figueres Vil.',
+    'Valencia Joaquin Sorolla': 'Valencia J.S.',
+    'Valencia - Joaquín Sorolla': 'Valencia J.S.',
+    'Valencia Joaquín Sorolla': 'Valencia J.S.',
+    'Sevilla Santa Justa': 'Sevilla S.J.',
+    'Sevilla - Santa Justa': 'Sevilla S.J.',
+    'Valladolid Campo Grande': 'Valladolid',
+    'Valladolid - Campo Grande': 'Valladolid',
+    'Zaragoza Delicias': 'Zaragoza Del.',
+    'Zaragoza - Delicias': 'Zaragoza Del.',
+    'Alicante/Alacant': 'Alicante',
+    'Alicante - Terminal': 'Alicante',
+    'Castellon De La Plana': 'Castellón',
+    'Castelló De La Plana': 'Castellón',
+    'Santiago De Compostela': 'Santiago Comp.',
+    'A Coruña': 'A Coruña',
+    'San Sebastian / Donostia': 'San Sebastián',
+    'Bilbao Abando Indalecio Prieto': 'Bilbao Abando',
+    'Cordoba Central': 'Córdoba',
+    'Malaga Maria Zambrano': 'Málaga M.Z.',
+    'Málaga - María Zambrano': 'Málaga M.Z.'
+};
+
+/**
+ * Garantiza estrictamente que el nombre de la estación tenga MÁXIMO 15 caracteres
+ * para visualización óptima en pantallas senior (+80 años).
+ */
+function formatStationMax15(code) {
+    let name = getStationName(code);
+    if (!name) return '--';
+    
+    // Mapeo conocido
+    if (STATION_ABBREVIATIONS[name]) {
+        name = STATION_ABBREVIATIONS[name];
+    }
+    
+    // Si aún supera 15 caracteres, acortar limpiamente
+    if (name.length > 15) {
+        if (name.includes(' - ')) {
+            name = name.split(' - ')[0].trim();
+        } else if (name.includes('/')) {
+            name = name.split('/')[0].trim();
+        }
+    }
+    
+    // Garantía estricta e inviolable: máximo 15 caracteres
+    if (name.length > 15) {
+        name = name.substring(0, 15).trim();
+    }
+    return name;
+}
+
 function getStationCoords(code) {
     if (!code) return null;
     const cleanCode = String(code).trim();
@@ -441,62 +509,112 @@ function displayTrain(train, resetMapView = true) {
 
     // 1. Cabecera
     const badge = document.getElementById('detailProductBadge');
-    badge.textContent = prod.name;
-    badge.className = `product-badge ${prod.badge}`;
-    badge.style.backgroundColor = prod.color;
+    if (badge) {
+        badge.textContent = prod.name;
+        badge.className = `product-badge ${prod.badge}`;
+        badge.style.backgroundColor = prod.color;
+    }
 
-    document.getElementById('detailTrainNumber').textContent = `Tren #${train.codComercial}`;
-    document.getElementById('detailServiceName').textContent = `${prod.name} · Transporte Ferroviario`;
+    const numEl = document.getElementById('detailTrainNumber');
+    if (numEl) numEl.textContent = `Tren #${train.codComercial}`;
+    const servEl = document.getElementById('detailServiceName');
+    if (servEl) servEl.textContent = `${prod.name} · Transporte Ferroviario`;
 
-    const statusPill = document.getElementById('detailStatusPill');
-    statusPill.className = `detail-status-pill ${delay.class === 'ontime' ? 'ontime' : (delay.class === 'slight' ? 'slight-delay' : 'heavy-delay')}`;
-    document.getElementById('detailStatusLabel').textContent = delay.text;
-
-    // 2. Métricas
-    const originName = getStationName(train.codOrigen);
-    const destName = getStationName(train.codDestino);
-    document.getElementById('detailOrigin').textContent = originName;
-    document.getElementById('detailDestination').textContent = destName;
+    // 2. TARJETA 1: TRAYECTO (Origen y Destino máx. 15 caracteres)
+    const originShort = formatStationMax15(train.codOrigen);
+    const destShort = formatStationMax15(train.codDestino);
+    const origEl = document.getElementById('detailOriginShort');
+    if (origEl) origEl.textContent = originShort;
+    const destEl = document.getElementById('detailDestinationShort');
+    if (destEl) destEl.textContent = destShort;
 
     // Buscar ruta para horarios de origen y fin
     const route = state.routes.find(r => normalizeTrainId(r.idTren) === normalizeTrainId(train.codComercial));
     if (route && route.estaciones && route.estaciones.length > 0) {
         const first = route.estaciones[0];
         const last = route.estaciones[route.estaciones.length - 1];
-        document.getElementById('detailDepTime').textContent = `Salida: ${first.hs || first.h || '--:--'}`;
-        document.getElementById('detailArrTime').textContent = `Llegada: ${last.h || last.hs || '--:--'}`;
+        const depEl = document.getElementById('detailDepTime');
+        if (depEl) depEl.textContent = first.hs || first.h ? `Salida: ${first.hs || first.h}` : 'Salida: --:--';
+        const arrEl = document.getElementById('detailArrTime');
+        if (arrEl) arrEl.textContent = last.h || last.hs ? `Llegada: ${last.h || last.hs}` : 'Llegada: --:--';
     } else {
-        document.getElementById('detailDepTime').textContent = 'Salida: --:--';
-        document.getElementById('detailArrTime').textContent = 'Llegada: --:--';
+        const depEl = document.getElementById('detailDepTime');
+        if (depEl) depEl.textContent = 'Salida: --:--';
+        const arrEl = document.getElementById('detailArrTime');
+        if (arrEl) arrEl.textContent = 'Llegada: --:--';
     }
 
-    document.getElementById('detailDelay').textContent = delay.text;
-    document.getElementById('detailDelaySub').textContent = train.synthetic ? 'Horario estático' : 'Telemetría en tiempo real';
+    // 3. TARJETA 2: RETRASO + PRÓXIMA PARADA
+    const delayIconEl = document.getElementById('detailDelayIcon');
+    const delayTextEl = document.getElementById('detailDelayText');
+    const delayBanner = document.getElementById('detailDelayBanner');
 
-    const nextStationName = getStationName(train.codEstSig);
-    document.getElementById('detailNextStation').textContent = nextStationName;
+    let delayClass = 'delay-ontime';
+    let icon = '🟢';
+    let text = 'EN HORA (0 min)';
 
-    if (train.horaLlegadaSigEst) {
-        try {
-            const timePart = train.horaLlegadaSigEst.split('T')[1]?.substring(0, 5) || train.horaLlegadaSigEst;
-            document.getElementById('detailNextEta').textContent = `Estimada: ${timePart}`;
-        } catch (e) {
-            document.getElementById('detailNextEta').textContent = 'Estimada: --:--';
+    if (delay.min === 0) {
+        delayClass = 'delay-ontime';
+        icon = '🟢';
+        text = 'EN HORA (Sin retraso)';
+    } else if (delay.min < 0) {
+        delayClass = 'delay-ontime';
+        icon = '🟢';
+        text = `ADELANTADO (${Math.abs(delay.min)} min)`;
+    } else if (delay.min <= 5) {
+        delayClass = 'delay-slight';
+        icon = '🟡';
+        text = `RETRASO LEVE (+${delay.min} min)`;
+    } else if (delay.min <= 15) {
+        delayClass = 'delay-slight';
+        icon = '🟡';
+        text = `RETRASO (+${delay.min} min)`;
+    } else {
+        delayClass = 'delay-heavy';
+        icon = '🔴';
+        text = `RETRASO IMPORTANTE (+${delay.min} min)`;
+    }
+
+    if (delayIconEl) delayIconEl.textContent = icon;
+    if (delayTextEl) delayTextEl.textContent = text;
+    if (delayBanner) {
+        delayBanner.className = `delay-highlight ${delayClass}`;
+    }
+
+    // Próxima parada (también máx. 15 caracteres)
+    const nextStationCode = train.codEstSig || train.codDestino;
+    const nextStationShort = formatStationMax15(nextStationCode);
+    const nextStEl = document.getElementById('detailNextStationShort');
+    if (nextStEl) nextStEl.textContent = nextStationShort;
+
+    const nextEtaEl = document.getElementById('detailNextEta');
+    if (nextEtaEl) {
+        if (train.horaLlegadaSigEst) {
+            try {
+                const timePart = train.horaLlegadaSigEst.split('T')[1]?.substring(0, 5) || train.horaLlegadaSigEst;
+                nextEtaEl.textContent = `Llegada prevista: ${timePart}`;
+            } catch (e) {
+                nextEtaEl.textContent = 'En trayecto hacia la estación';
+            }
+        } else {
+            nextEtaEl.textContent = 'En trayecto hacia la estación';
         }
-    } else {
-        document.getElementById('detailNextEta').textContent = 'En trayecto';
     }
 
-    // 3. Detalles técnicos
-    document.getElementById('detailMaterial').textContent = mat.name;
-    document.getElementById('detailMatricula').textContent = mat.code !== '--' ? `#${mat.code}` : 'No disponible';
-    document.getElementById('detailAccessible').textContent = train.accesible ? '♿ Servicio Atendo / PMR Habilitado' : 'Estándar';
-    document.getElementById('detailLastStation').textContent = getStationName(train.codEstAnt);
+    // 4. DETALLES TÉCNICOS (EN DESPLEGABLE)
+    const matEl = document.getElementById('detailMaterial');
+    if (matEl) matEl.textContent = mat.name;
+    const matrEl = document.getElementById('detailMatricula');
+    if (matrEl) matrEl.textContent = mat.code !== '--' ? `#${mat.code}` : 'No disponible';
+    const accEl = document.getElementById('detailAccessible');
+    if (accEl) accEl.textContent = train.accesible ? '♿ Servicio Atendo / PMR Habilitado' : 'Estándar';
+    const lastStEl = document.getElementById('detailLastStation');
+    if (lastStEl) lastStEl.textContent = getStationName(train.codEstAnt);
 
-    // 4. Renderizar Timeline de Estaciones
+    // 5. Renderizar Timeline de Estaciones
     renderTimeline(train, route);
 
-    // 5. Renderizar Mapa
+    // 6. Renderizar Mapa
     renderMap(train, route, resetMapView);
 }
 
@@ -602,10 +720,9 @@ function initMapIfNeeded() {
         zoomControl: true
     });
 
-    // CartoDB Voyager tiles (modernos, claros y limpios)
-    L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
-        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/">CARTO</a>',
-        subdomains: 'abcd',
+    // OpenStreetMap tiles estándar (sin requisitos de API key ni marcas de agua)
+    L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a> contributors',
         maxZoom: 19
     }).addTo(state.map);
 }
@@ -1077,6 +1194,12 @@ async function init() {
     }, CONFIG.POLL_INTERVAL);
 }
 
+function refreshMap() {
+    if (state.map) {
+        state.map.invalidateSize();
+    }
+}
+
 // Exponer funciones al objeto global para los eventos HTML
 window.app = {
     handleSearchSubmit,
@@ -1086,6 +1209,7 @@ window.app = {
     shareTrain,
     centerMapOnTrain,
     fitMapToRoute,
+    refreshMap,
     switchTab,
     showHomeView,
     setFleetFilter,

@@ -350,21 +350,22 @@ body {
 
 .search-icon {
     position: absolute;
-    left: 0.9rem;
-    font-size: 1.05rem;
+    left: 1rem;
+    font-size: 1.25rem;
     pointer-events: none;
-    opacity: 0.7;
+    opacity: 0.8;
 }
 
 .search-input {
     width: 100%;
-    padding: 0.85rem 2.5rem 0.85rem 2.8rem;
+    min-height: 58px;
+    padding: 0.85rem 2.8rem 0.85rem 3.2rem;
     font-family: var(--font-sans);
-    font-size: 16px; /* 16px previene auto-zoom en iOS Safari */
-    font-weight: 600;
+    font-size: 1.15rem; /* ~18.5px, muy visible y sin zoom en móviles */
+    font-weight: 700;
     color: var(--text-primary);
-    background: var(--bg-card-subtle);
-    border: 2px solid var(--border-color);
+    background: #ffffff;
+    border: 2.5px solid var(--border-color);
     border-radius: var(--radius-md);
     outline: none;
     transition: all 0.2s ease;
@@ -373,19 +374,19 @@ body {
 .search-input:focus {
     border-color: var(--renfe-purple);
     background: #ffffff;
-    box-shadow: 0 0 0 3px rgba(87, 22, 97, 0.12);
+    box-shadow: 0 0 0 4px rgba(87, 22, 97, 0.15);
 }
 
 .btn-clear {
     position: absolute;
-    right: 0.75rem;
+    right: 0.85rem;
     background: none;
     border: none;
     color: var(--text-muted);
-    font-size: 1.1rem;
+    font-size: 1.3rem;
     cursor: pointer;
-    width: 24px;
-    height: 24px;
+    width: 32px;
+    height: 32px;
     border-radius: 50%;
     display: flex;
     align-items: center;
@@ -402,14 +403,16 @@ body {
     color: white;
     border: none;
     border-radius: var(--radius-md);
-    padding: 0.85rem 1.5rem;
+    padding: 0.95rem 1.85rem;
+    min-height: 58px;
     font-family: var(--font-sans);
-    font-size: 0.95rem;
-    font-weight: 700;
+    font-size: 1.15rem;
+    font-weight: 800;
     cursor: pointer;
     display: inline-flex;
     align-items: center;
-    gap: 0.45rem;
+    justify-content: center;
+    gap: 0.55rem;
     transition: all 0.2s ease;
     white-space: nowrap;
     flex-shrink: 0;
@@ -698,64 +701,240 @@ body {
     color: var(--text-secondary);
 }
 
-/* Grid de métricas */
-.metrics-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-    gap: 0.85rem;
+/* ==========================================================================
+   TARJETAS ACCESIBLES PARA MAYORES (+80 AÑOS)
+   Tipografía gigante, alto contraste visual y sin elementos recargados.
+   ========================================================================== */
+.senior-card {
+    background: #ffffff;
+    border: 2px solid #cbd5e1;
+    border-radius: var(--radius-lg);
+    padding: 1.35rem 1.5rem;
     margin-bottom: 1.25rem;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
     width: 100%;
 }
 
-.metric-card {
-    background: var(--bg-card-subtle);
-    border: 1px solid var(--border-color);
-    border-radius: var(--radius-md);
-    padding: 0.95rem;
-    display: flex;
-    align-items: flex-start;
-    gap: 0.75rem;
-    min-width: 0; /* IMPRESCINDIBLE PARA PREVENIR OVERFLOW EN CSS GRID */
-    overflow: hidden;
+.senior-card-label {
+    font-size: 0.82rem;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #475569;
+    margin-bottom: 0.75rem;
 }
 
-.metric-icon {
-    font-size: 1.5rem;
+/* Tarjeta 1: Trayecto (Origen y Destino combinados, máx. 15 caracteres) */
+.route-card {
+    border-left: 6px solid var(--renfe-purple);
+}
+
+.route-display {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1.25rem;
+    width: 100%;
+}
+
+.route-point {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-width: 0;
+}
+
+.point-badge {
+    font-size: 0.75rem;
+    font-weight: 800;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: #64748b;
+    margin-bottom: 0.2rem;
+}
+
+.point-city {
+    font-size: clamp(1.4rem, 4vw, 1.95rem);
+    font-weight: 800;
+    color: #0f172a;
+    line-height: 1.2;
+    word-break: break-word;
+}
+
+.point-time {
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: #334155;
+    margin-top: 0.35rem;
+}
+
+.route-arrow {
+    font-size: 2.2rem;
+    font-weight: 900;
+    color: var(--renfe-purple);
+    flex-shrink: 0;
+    padding: 0 0.5rem;
+    user-select: none;
+}
+
+/* Tarjeta 2: Retraso + Próxima parada */
+.status-card {
+    border-left: 6px solid #10b981;
+}
+
+.delay-highlight {
+    display: flex;
+    align-items: center;
+    gap: 0.85rem;
+    padding: 1rem 1.25rem;
+    border-radius: var(--radius-md);
+    margin-bottom: 1rem;
+    border: 2px solid transparent;
+    width: 100%;
+    flex-wrap: wrap;
+}
+
+.delay-icon {
+    font-size: 2rem;
     line-height: 1;
     flex-shrink: 0;
 }
 
-.metric-data {
+.delay-text {
+    font-size: clamp(1.25rem, 3.5vw, 1.65rem);
+    font-weight: 800;
+    letter-spacing: -0.01em;
+    word-break: break-word;
+}
+
+.delay-highlight.delay-ontime {
+    background: #ecfdf5;
+    color: #065f46;
+    border-color: #10b981;
+}
+
+.delay-highlight.delay-slight {
+    background: #fffbeb;
+    color: #92400e;
+    border-color: #f59e0b;
+}
+
+.delay-highlight.delay-heavy {
+    background: #fef2f2;
+    color: #991b1b;
+    border-color: #ef4444;
+}
+
+.next-station-row {
     display: flex;
     flex-direction: column;
-    min-width: 0;
+    gap: 0.35rem;
+    padding: 0.95rem 1.15rem;
+    background: #f8fafc;
+    border: 2px solid #e2e8f0;
+    border-radius: var(--radius-md);
     width: 100%;
-    overflow: hidden;
 }
 
-.metric-label {
-    font-size: 0.72rem;
-    font-weight: 700;
+.next-station-tag {
+    font-size: 0.8rem;
+    font-weight: 800;
+    letter-spacing: 0.06em;
+    color: #64748b;
     text-transform: uppercase;
-    letter-spacing: 0.05em;
-    color: var(--text-muted);
 }
 
-.metric-value {
+.next-station-name {
+    font-size: clamp(1.3rem, 3.5vw, 1.65rem);
+    font-weight: 800;
+    color: #0f172a;
+    word-break: break-word;
+    line-height: 1.25;
+}
+
+.next-station-eta {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #334155;
+}
+
+/* ==========================================================================
+   ACORDEONES DESPLEGABLES SENIOR (<details>)
+   Grandes botones táctiles, fáciles de pulsar para personas mayores.
+   ========================================================================== */
+.senior-accordion {
+    border: 2px solid #cbd5e1;
+    border-radius: var(--radius-md);
+    margin-bottom: 1rem;
+    background: #ffffff;
+    overflow: hidden;
+    transition: all 0.2s ease;
+    width: 100%;
+}
+
+.senior-accordion[open] {
+    border-color: var(--renfe-purple);
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.06);
+}
+
+.accordion-summary {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1.05rem 1.25rem;
+    font-size: 1.1rem;
+    font-weight: 800;
+    color: #1e293b;
+    cursor: pointer;
+    user-select: none;
+    list-style: none;
+    background: #f8fafc;
+    gap: 0.75rem;
+    min-height: 56px;
+    transition: background 0.15s ease, color 0.15s ease;
+}
+
+.accordion-summary::-webkit-details-marker {
+    display: none;
+}
+
+.accordion-summary:hover {
+    background: #f1f5f9;
+    color: var(--renfe-purple);
+}
+
+.senior-accordion[open] .accordion-summary {
+    background: var(--renfe-purple-subtle);
+    color: var(--renfe-purple);
+    border-bottom: 2px solid #e2e8f0;
+}
+
+.summary-text {
     font-size: 1.05rem;
     font-weight: 700;
-    color: var(--text-primary);
-    line-height: 1.25;
-    margin-top: 0.15rem;
-    word-break: break-word;
-    overflow-wrap: break-word;
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
+    line-height: 1.3;
 }
 
-.metric-sub {
-    font-size: 0.78rem;
-    color: var(--text-secondary);
-    font-weight: 500;
-    margin-top: 0.2rem;
+.summary-chevron {
+    font-size: 1rem;
+    font-weight: 900;
+    transition: transform 0.25s ease;
+    color: #64748b;
+    flex-shrink: 0;
+}
+
+.senior-accordion[open] .summary-chevron {
+    transform: rotate(180deg);
+    color: var(--renfe-purple);
+}
+
+.accordion-body {
+    padding: 1.25rem;
+    background: #ffffff;
+    width: 100%;
 }
 
 /* Detalles Técnicos */
@@ -1479,12 +1658,49 @@ body {
 
     .btn-primary {
         width: 100%;
-        min-height: 44px;
+        min-height: 56px;
+        font-size: 1.15rem;
         justify-content: center;
     }
 
     .train-number {
         font-size: 1.3rem;
+    }
+
+    /* Adaptación de ruta y tarjetas para personas mayores en pantallas pequeñas */
+    .route-display {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.75rem;
+    }
+
+    .route-arrow {
+        transform: rotate(90deg);
+        padding: 0;
+        margin: 0.1rem 0;
+        font-size: 1.6rem;
+        align-self: center;
+    }
+
+    .point-city {
+        font-size: 1.6rem;
+    }
+
+    .delay-text {
+        font-size: 1.35rem;
+    }
+
+    .next-station-name {
+        font-size: 1.35rem;
+    }
+
+    .senior-card {
+        padding: 1.15rem 1rem;
+    }
+
+    .accordion-summary {
+        padding: 0.95rem 1rem;
+        font-size: 1rem;
     }
 
     .map-wrapper {
