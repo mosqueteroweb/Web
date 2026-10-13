@@ -50,11 +50,12 @@
         <nav class="nav-tabs">
             <button class="nav-tab active" id="tabSearch" onclick="app.switchTab('search')">
                 <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2" fill="none"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
-                Buscar Tren
+                <span>Buscar Tren</span>
             </button>
             <button class="nav-tab" id="tabFleet" onclick="app.switchTab('fleet')">
                 <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2" fill="none"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
-                Trenes en Circulación (<span id="totalTrainsCount">0</span>)
+                <span>Trenes en Circulación</span>
+                <span class="tab-badge" id="totalTrainsCount">0</span>
             </button>
         </nav>
 
@@ -269,12 +270,12 @@
                 </div>
 
                 <div class="filter-pills" id="fleetProductFilters">
-                    <button class="filter-pill active" onclick="app.setFleetFilter('all')">Todos (<span id="countAll">0</span>)</button>
-                    <button class="filter-pill" onclick="app.setFleetFilter('AVE')">AVE (<span id="countAve">0</span>)</button>
-                    <button class="filter-pill" onclick="app.setFleetFilter('AVLO')">Avlo (<span id="countAvlo">0</span>)</button>
-                    <button class="filter-pill" onclick="app.setFleetFilter('Alvia')">Alvia (<span id="countAlvia">0</span>)</button>
-                    <button class="filter-pill" onclick="app.setFleetFilter('MD')">Media Distancia (<span id="countMd">0</span>)</button>
-                    <button class="filter-pill" onclick="app.setFleetFilter('delay')">Con Retraso (>5m) (<span id="countDelay">0</span>)</button>
+                    <button class="filter-pill active" onclick="app.setFleetFilter('all')">Todos: <span id="countAll">0</span></button>
+                    <button class="filter-pill" onclick="app.setFleetFilter('AVE')">AVE: <span id="countAve">0</span></button>
+                    <button class="filter-pill" onclick="app.setFleetFilter('AVLO')">Avlo: <span id="countAvlo">0</span></button>
+                    <button class="filter-pill" onclick="app.setFleetFilter('Alvia')">Alvia: <span id="countAlvia">0</span></button>
+                    <button class="filter-pill" onclick="app.setFleetFilter('MD')">Media Distancia: <span id="countMd">0</span></button>
+                    <button class="filter-pill" onclick="app.setFleetFilter('delay')">Con Retraso: <span id="countDelay">0</span></button>
                 </div>
             </div>
 
