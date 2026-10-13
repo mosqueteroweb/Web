@@ -1223,10 +1223,168 @@ body {
     text-decoration: underline;
 }
 
+/* Recent searches styles */
+.recent-access {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    padding-top: 0.65rem;
+    padding-bottom: 0.65rem;
+    border-top: 1px dashed var(--border-subtle);
+}
+
+.recent-chip {
+    background: #ffffff;
+    border: 1px solid var(--border-color);
+    box-shadow: 0 1px 2px rgba(0,0,0,0.04);
+}
+
+.recent-chip:hover {
+    border-color: var(--renfe-purple);
+    background: var(--renfe-purple-subtle);
+}
+
+.autocomplete-item.selected {
+    background: var(--renfe-purple-subtle);
+    outline: 2px solid var(--renfe-purple);
+}
+
+/* Detail header right actions */
+.detail-header-right {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+}
+
+.detail-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
+}
+
+.btn-action {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    background: white;
+    border: 1px solid var(--border-color);
+    padding: 0.45rem 0.85rem;
+    border-radius: var(--radius-sm);
+    font-size: 0.82rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.btn-action:hover {
+    background: var(--renfe-purple-subtle);
+    border-color: var(--renfe-purple);
+    color: var(--renfe-purple);
+}
+
+.btn-action.btn-subtle {
+    background: var(--bg-card-subtle);
+    color: var(--text-secondary);
+}
+
+.btn-action.btn-subtle:hover {
+    background: var(--border-color);
+    color: var(--text-primary);
+}
+
 /* ==========================================================================
-   RESPONSIVIDAD
+   RESPONSIVIDAD AVANZADA (MÓVIL Y TABLET)
    ========================================================================== */
+@media (max-width: 960px) {
+    .content-split-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .map-wrapper {
+        min-height: 380px;
+    }
+}
+
+@media (max-width: 768px) {
+    /* Optimización de tabla a vista de tarjetas en móviles */
+    .fleet-table-wrapper {
+        background: transparent;
+        border: none;
+        box-shadow: none;
+    }
+
+    .fleet-table,
+    .fleet-table thead,
+    .fleet-table tbody,
+    .fleet-table th,
+    .fleet-table td,
+    .fleet-table tr {
+        display: block;
+    }
+
+    .fleet-table thead {
+        display: none;
+    }
+
+    .fleet-table tbody tr {
+        background: white;
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius-md);
+        margin-bottom: 0.85rem;
+        padding: 1rem;
+        box-shadow: var(--shadow-sm);
+    }
+
+    .fleet-table td {
+        padding: 0.35rem 0;
+        border-bottom: none;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-size: 0.88rem;
+    }
+
+    .fleet-table td:nth-child(1) {
+        font-size: 1.1rem;
+        border-bottom: 1px solid var(--border-subtle);
+        padding-bottom: 0.5rem;
+        margin-bottom: 0.4rem;
+    }
+
+    .fleet-table td:nth-child(1)::before { content: 'Tren'; font-size: 0.75rem; text-transform: uppercase; color: var(--text-muted); font-weight: 700; }
+    .fleet-table td:nth-child(2)::before { content: 'Servicio'; font-size: 0.75rem; text-transform: uppercase; color: var(--text-muted); font-weight: 600; }
+    .fleet-table td:nth-child(3)::before { content: 'Origen'; font-size: 0.75rem; text-transform: uppercase; color: var(--text-muted); font-weight: 600; }
+    .fleet-table td:nth-child(4)::before { content: 'Destino'; font-size: 0.75rem; text-transform: uppercase; color: var(--text-muted); font-weight: 600; }
+    .fleet-table td:nth-child(5)::before { content: 'Próxima Parada'; font-size: 0.75rem; text-transform: uppercase; color: var(--text-muted); font-weight: 600; }
+    .fleet-table td:nth-child(6)::before { content: 'Puntualidad'; font-size: 0.75rem; text-transform: uppercase; color: var(--text-muted); font-weight: 600; }
+    .fleet-table td:nth-child(7)::before { content: 'Composición'; font-size: 0.75rem; text-transform: uppercase; color: var(--text-muted); font-weight: 600; }
+
+    .fleet-table td:last-child {
+        padding-top: 0.6rem;
+        margin-top: 0.4rem;
+        border-top: 1px dashed var(--border-subtle);
+        justify-content: flex-end;
+    }
+
+    .fleet-table td:last-child button {
+        width: 100%;
+        padding: 0.6rem;
+        text-align: center;
+        background: var(--renfe-purple-subtle);
+        color: var(--renfe-purple);
+        font-weight: 700;
+        border-color: var(--renfe-purple);
+    }
+}
+
 @media (max-width: 680px) {
+    .main-container {
+        padding: 1rem 0.75rem 2.5rem;
+    }
+
     .header-container {
         flex-direction: column;
         align-items: flex-start;
@@ -1238,25 +1396,70 @@ body {
         justify-content: space-between;
     }
 
+    .search-card {
+        padding: 1.25rem 1rem;
+    }
+
+    .search-input {
+        font-size: 16px; /* Evita zoom automático en iOS */
+        padding: 0.85rem 2.5rem 0.85rem 2.8rem;
+    }
+
     .search-form {
         flex-direction: column;
+        gap: 0.65rem;
     }
 
     .btn-primary {
         width: 100%;
+        min-height: 44px;
         justify-content: center;
+    }
+
+    .detail-card {
+        padding: 1.25rem 1rem;
     }
 
     .detail-header {
         flex-direction: column;
         align-items: flex-start;
+        gap: 0.85rem;
+    }
+
+    .detail-header-right {
+        width: 100%;
+        justify-content: space-between;
+    }
+
+    .metrics-grid {
+        grid-template-columns: 1fr 1fr;
+        gap: 0.65rem;
+    }
+
+    .metric-card {
+        padding: 0.75rem;
+        gap: 0.5rem;
+    }
+
+    .metric-value {
+        font-size: 0.95rem;
     }
 
     .map-wrapper {
-        min-height: 340px;
+        min-height: 320px;
     }
 
     .train-map {
-        min-height: 320px;
+        min-height: 300px;
+    }
+
+    .timeline-wrapper {
+        max-height: 400px;
+    }
+}
+
+@media (max-width: 480px) {
+    .metrics-grid {
+        grid-template-columns: 1fr;
     }
 }

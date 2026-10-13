@@ -93,8 +93,121 @@ const state = {
 };
 
 // ============================================================================
-// FUNCIONES DE UTILIDAD Y NORMALIZACIÓN
+// FUNCIONES DE UTILIDAD, SEGURIDAD Y NORMALIZACIÓN
 // ============================================================================
+
+/**
+ * Sanitiza cadenas para prevenir ataques de Cross-Site Scripting (XSS).
+ */
+function escapeHTML(str) {
+    if (str === null || str === undefined) return '';
+    return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+}
+
+/**
+ * Sanitiza entradas de usuario para números de tren.
+ */
+function sanitizeInput(str) {
+    if (!str) return '';
+    return String(str).trim().replace(/[^a-zA-Z0-9\s-]/g, '').substring(0, 15);
+}
+
+const RECENT_KEY = 'infotren_recent_searches';
+
+function getRecentSearches() {
+    try {
+        const stored = localStorage.getItem(RECENT_KEY);
+        return stored ? JSON.parse(stored) : [];
+    } catch (e) {
+        return [];
+    }
+}
+
+function saveRecentSearch(trainNumber, prodName) {
+    if (!trainNumber) return;
+    try {
+        const clean = sanitizeInput(trainNumber);
+        let recents = getRecentSearches().filter(r => r.num !== clean);
+        recents.unshift({ num: clean, prod: prodName || 'Tren' });
+        recents = recents.slice(0, 4);
+        localStorage.setItem(RECENT_KEY, JSON.stringify(recents));
+        renderRecentSearches();
+    } catch (e) {}
+}
+
+function renderRecentSearches() {
+    const box = document.getElementById('recentAccess');
+    const container = document.getElementById('recentChips');
+    if (!box || !container) return;
+
+    const recents = getRecentSearches();
+    if (!recents || recents.length === 0) {
+        box.style.display = 'none';
+        return;
+    }
+
+    container.innerHTML = '';
+    recents.forEach(r => {
+        const chip = document.createElement('button');
+        chip.type = 'button';
+        chip.className = 'chip recent-chip';
+        chip.innerHTML = `<span>#${escapeHTML(r.num)}</span> <small style="color:var(--text-muted);font-weight:600;">(${escapeHTML(r.prod)})</small>`;
+        chip.onclick = () => {
+            const input = document.getElementById('trainInput');
+            input.value = r.num;
+            searchTrain(r.num);
+        };
+        container.appendChild(chip);
+    });
+    box.style.display = 'flex';
+}
+
+async function shareTrain() {
+    if (!state.currentTrain) return;
+    const url = window.location.href;
+    const btn = document.getElementById('shareBtnText');
+    const trainNum = state.currentTrain.codComercial;
+    const prod = getProductInfo(state.currentTrain.codProduct);
+    const orig = getStationName(state.currentTrain.codOrigen);
+    const dest = getStationName(state.currentTrain.codDestino);
+
+    if (navigator.share) {
+        try {
+            await navigator.share({
+                title: `InfoTren Renfe - ${prod.name} #${trainNum}`,
+                text: `Sigue en tiempo real el tren ${prod.name} #${trainNum} (${orig} → ${dest})`,
+                url: url
+            });
+            return;
+        } catch (e) {
+            // Continuar con fallback al portapapeles si cancela
+        }
+    }
+
+    try {
+        await navigator.clipboard.writeText(url);
+        if (btn) {
+            btn.textContent = '¡Copiado!';
+            setTimeout(() => { btn.textContent = 'Compartir'; }, 2200);
+        }
+    } catch (e) {
+        const temp = document.createElement('input');
+        temp.value = url;
+        document.body.appendChild(temp);
+        temp.select();
+        document.execCommand('copy');
+        document.body.removeChild(temp);
+        if (btn) {
+            btn.textContent = '¡Copiado!';
+            setTimeout(() => { btn.textContent = 'Compartir'; }, 2200);
+        }
+    }
+}
 
 function normalizeTrainId(val) {
     if (!val) return '';
@@ -124,7 +237,7 @@ function getStationName(code) {
     if (st) {
         return st.n;
     }
-    return `Estación (${code})`;
+    return `Estación (${cleanCode})`;
 }
 
 function getStationCoords(code) {
@@ -288,7 +401,10 @@ function findTrain(query) {
 
 function searchTrain(query) {
     if (!query) return;
-    const found = findTrain(query);
+    const clean = sanitizeInput(query);
+    if (!clean) return;
+
+    const found = findTrain(clean);
 
     const detailContainer = document.getElementById('trainDetailContainer');
     const emptyPrompt = document.getElementById('emptySearchPrompt');
@@ -308,9 +424,9 @@ function searchTrain(query) {
         emptyPrompt.style.display = 'none';
         detailContainer.style.display = 'none';
         notFoundState.style.display = 'block';
-        document.getElementById('notFoundTitle').textContent = `Tren #${query} no encontrado`;
+        document.getElementById('notFoundTitle').textContent = `Tren #${clean} no encontrado`;
         document.getElementById('notFoundMsg').textContent = 
-            `Actualmente no hay telemetría activa para el tren con número ${query} en la red de Renfe. Comprueba el código e inténtalo de nuevo.`;
+            `Actualmente no hay telemetría activa para el tren con número ${clean} en la red de Renfe. Comprueba el código e inténtalo de nuevo.`;
     }
 }
 
@@ -319,6 +435,9 @@ function displayTrain(train, resetMapView = true) {
     const prod = getProductInfo(train.codProduct);
     const delay = formatDelay(train.ultRetraso);
     const mat = getMaterialInfo(train.mat);
+
+    // Guardar en búsquedas recientes
+    saveRecentSearch(train.codComercial, prod.name);
 
     // 1. Cabecera
     const badge = document.getElementById('detailProductBadge');
@@ -445,12 +564,12 @@ function renderTimeline(train, route) {
         step.className = `timeline-step ${statusClass}`;
         step.innerHTML = `
             <div class="step-top">
-                <span class="step-station-name">${stName}</span>
-                <span class="step-time-badge">${stop.h || stop.hs || '--:--'}</span>
+                <span class="step-station-name">${escapeHTML(stName)}</span>
+                <span class="step-time-badge">${escapeHTML(stop.h || stop.hs || '--:--')}</span>
             </div>
             <div class="step-meta">
-                <span>${loc ? loc + ' · ' : ''}Adif #${stop.p}</span>
-                <span class="step-status-tag">${statusText}</span>
+                <span>${loc ? escapeHTML(loc) + ' · ' : ''}Adif #${escapeHTML(stop.p)}</span>
+                <span class="step-status-tag">${escapeHTML(statusText)}</span>
             </div>
         `;
 
@@ -551,9 +670,9 @@ function renderMap(train, route, shouldFitBounds = true) {
 
                 const marker = L.marker(coords, { icon })
                     .bindPopup(`
-                        <strong>${getStationName(stop.p)}</strong><br>
-                        Hora: ${stop.h || stop.hs || '--:--'}<br>
-                        Código: ${stop.p}
+                        <strong>${escapeHTML(getStationName(stop.p))}</strong><br>
+                        Hora: ${escapeHTML(stop.h || stop.hs || '--:--')}<br>
+                        Código: ${escapeHTML(stop.p)}
                     `)
                     .addTo(state.map);
 
@@ -578,10 +697,10 @@ function renderMap(train, route, shouldFitBounds = true) {
         state.mapLayers.trainMarker = L.marker(trainCoords, { icon: trainIcon, zIndexOffset: 1000 })
             .bindPopup(`
                 <div style="font-family: var(--font-sans); padding: 4px;">
-                    <strong style="color: ${prod.color}; font-size: 14px;">${prod.name} #${train.codComercial}</strong><br>
-                    <strong>Estado:</strong> ${delay.text}<br>
-                    <strong>Próxima parada:</strong> ${getStationName(train.codEstSig)}<br>
-                    <strong>Destino:</strong> ${getStationName(train.codDestino)}
+                    <strong style="color: ${escapeHTML(prod.color)}; font-size: 14px;">${escapeHTML(prod.name)} #${escapeHTML(train.codComercial)}</strong><br>
+                    <strong>Estado:</strong> ${escapeHTML(delay.text)}<br>
+                    <strong>Próxima parada:</strong> ${escapeHTML(getStationName(train.codEstSig))}<br>
+                    <strong>Destino:</strong> ${escapeHTML(getStationName(train.codDestino))}
                 </div>
             `)
             .addTo(state.map);
@@ -633,8 +752,8 @@ function renderQuickChips() {
         chip.type = 'button';
         chip.className = 'chip';
         chip.innerHTML = `
-            <span class="chip-tag" style="background-color: ${prod.color}">${prod.name}</span>
-            <span>#${t.codComercial}</span>
+            <span class="chip-tag" style="background-color: ${escapeHTML(prod.color)}">${escapeHTML(prod.name)}</span>
+            <span>#${escapeHTML(t.codComercial)}</span>
         `;
         chip.onclick = () => {
             document.getElementById('trainInput').value = t.codComercial;
@@ -644,10 +763,55 @@ function renderQuickChips() {
     });
 }
 
+state.autocompleteSelectedIndex = -1;
+
+function handleInputKeydown(e) {
+    const dropdown = document.getElementById('autocompleteDropdown');
+    const items = dropdown.querySelectorAll('.autocomplete-item');
+
+    if (e.key === 'Escape') {
+        dropdown.style.display = 'none';
+        state.autocompleteSelectedIndex = -1;
+        return;
+    }
+
+    if (dropdown.style.display !== 'none' && items.length > 0) {
+        if (e.key === 'ArrowDown') {
+            e.preventDefault();
+            state.autocompleteSelectedIndex = (state.autocompleteSelectedIndex + 1) % items.length;
+            highlightAutocompleteItem(items);
+            return;
+        }
+        if (e.key === 'ArrowUp') {
+            e.preventDefault();
+            state.autocompleteSelectedIndex = (state.autocompleteSelectedIndex - 1 + items.length) % items.length;
+            highlightAutocompleteItem(items);
+            return;
+        }
+        if (e.key === 'Enter' && state.autocompleteSelectedIndex >= 0) {
+            e.preventDefault();
+            items[state.autocompleteSelectedIndex].click();
+            return;
+        }
+    }
+}
+
+function highlightAutocompleteItem(items) {
+    items.forEach((it, idx) => {
+        if (idx === state.autocompleteSelectedIndex) {
+            it.classList.add('selected');
+            it.scrollIntoView({ block: 'nearest' });
+        } else {
+            it.classList.remove('selected');
+        }
+    });
+}
+
 function handleInputSearch(e) {
     const query = e.target.value.trim().toLowerCase();
     const btnClear = document.getElementById('btnClear');
     const dropdown = document.getElementById('autocompleteDropdown');
+    state.autocompleteSelectedIndex = -1;
 
     btnClear.style.display = query ? 'flex' : 'none';
 
@@ -674,12 +838,13 @@ function handleInputSearch(e) {
         const prod = getProductInfo(t.codProduct);
         const item = document.createElement('div');
         item.className = 'autocomplete-item';
+        item.setAttribute('role', 'option');
         item.innerHTML = `
             <div class="item-main">
-                <span class="table-badge" style="background-color: ${prod.color}">${prod.name}</span>
-                <span class="item-train-num">#${t.codComercial}</span>
+                <span class="table-badge" style="background-color: ${escapeHTML(prod.color)}">${escapeHTML(prod.name)}</span>
+                <span class="item-train-num">#${escapeHTML(t.codComercial)}</span>
             </div>
-            <div class="item-route">${getStationName(t.codOrigen)} → ${getStationName(t.codDestino)}</div>
+            <div class="item-route">${escapeHTML(getStationName(t.codOrigen))} → ${escapeHTML(getStationName(t.codDestino))}</div>
         `;
         item.onclick = () => {
             document.getElementById('trainInput').value = t.codComercial;
@@ -697,12 +862,14 @@ function clearSearch() {
     input.value = '';
     document.getElementById('btnClear').style.display = 'none';
     document.getElementById('autocompleteDropdown').style.display = 'none';
+    state.autocompleteSelectedIndex = -1;
     input.focus();
 }
 
 function handleSearchSubmit(e) {
     e.preventDefault();
     document.getElementById('autocompleteDropdown').style.display = 'none';
+    state.autocompleteSelectedIndex = -1;
     const query = document.getElementById('trainInput').value.trim();
     if (query) {
         searchTrain(query);
@@ -789,14 +956,14 @@ function updateFleetTable() {
         const tr = document.createElement('tr');
 
         tr.innerHTML = `
-            <td><span class="table-train-tag">#${t.codComercial}</span></td>
-            <td><span class="table-badge" style="background-color: ${prod.color}">${prod.name}</span></td>
-            <td><strong>${getStationName(t.codOrigen)}</strong></td>
-            <td><strong>${getStationName(t.codDestino)}</strong></td>
-            <td>${getStationName(t.codEstSig)}</td>
-            <td><span class="table-delay ${delay.class}">${delay.text}</span></td>
-            <td><small>${mat.name}</small></td>
-            <td><button class="btn-sm" type="button">Ver Ficha</button></td>
+            <td><span class="table-train-tag">#${escapeHTML(t.codComercial)}</span></td>
+            <td><span class="table-badge" style="background-color: ${escapeHTML(prod.color)}">${escapeHTML(prod.name)}</span></td>
+            <td><strong>${escapeHTML(getStationName(t.codOrigen))}</strong></td>
+            <td><strong>${escapeHTML(getStationName(t.codDestino))}</strong></td>
+            <td>${escapeHTML(getStationName(t.codEstSig))}</td>
+            <td><span class="table-delay ${escapeHTML(delay.class)}">${escapeHTML(delay.text)}</span></td>
+            <td><small>${escapeHTML(mat.name)}</small></td>
+            <td><button class="btn-sm" type="button" aria-label="Ver ficha del tren #${escapeHTML(t.codComercial)}">Ver Ficha</button></td>
         `;
 
         tr.onclick = () => {
@@ -887,13 +1054,16 @@ async function init() {
         }
     });
 
-    // 1. Cargar catálogo de estaciones
+    // 1. Mostrar búsquedas recientes previas
+    renderRecentSearches();
+
+    // 2. Cargar catálogo de estaciones
     await loadStations();
 
-    // 2. Cargar telemetría en tiempo real
+    // 3. Cargar telemetría en tiempo real
     await refreshData();
 
-    // 3. Revisar si hay parámetro en la URL (?tren=XXXX)
+    // 4. Revisar si hay parámetro en la URL (?tren=XXXX)
     const urlParams = new URLSearchParams(window.location.search);
     const trainParam = urlParams.get('tren');
     if (trainParam) {
@@ -901,7 +1071,7 @@ async function init() {
         searchTrain(trainParam);
     }
 
-    // 4. Iniciar refresco automático periódico (cada 30 segs)
+    // 5. Iniciar refresco automático periódico (cada 30 segs)
     state.pollTimer = setInterval(() => {
         refreshData(true);
     }, CONFIG.POLL_INTERVAL);
@@ -911,7 +1081,9 @@ async function init() {
 window.app = {
     handleSearchSubmit,
     handleInputSearch,
+    handleInputKeydown,
     clearSearch,
+    shareTrain,
     centerMapOnTrain,
     fitMapToRoute,
     switchTab,

@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>InfoTren - Consulta y Seguimiento de Trenes Renfe en Tiempo Real</title>
     <meta name="description" content="Consulta cualquier número de tren de Renfe (AVE, Avlo, Alvia, Avant, Media Distancia) y obtén sus datos, paradas, retraso y posición en tiempo real.">
+    <meta name="referrer" content="strict-origin-when-cross-origin">
+    <meta http-equiv="X-Content-Type-Options" content="nosniff">
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220%22%20width=%22100%22%20height=%22100%22><text y=%22.9em%22 font-size=%2290%22>🚆</text></svg>">
     
     <!-- Google Fonts -->
@@ -21,7 +23,7 @@
 <body>
     <header class="app-header">
         <div class="header-container">
-            <div class="brand-group" onclick="app.showHomeView()" style="cursor: pointer;">
+            <div class="brand-group" onclick="app.showHomeView()" style="cursor: pointer;" tabindex="0" role="button" aria-label="Volver al inicio de InfoTren">
                 <div class="brand-logo">
                     <span class="train-icon">🚆</span>
                 </div>
@@ -32,11 +34,11 @@
             </div>
 
             <div class="header-actions">
-                <div class="data-status" id="connectionStatus" title="Estado de la conexión">
+                <div class="data-status" id="connectionStatus" role="status" aria-live="polite" title="Estado de la conexión">
                     <span class="status-dot pulsing"></span>
                     <span class="status-text" id="statusText">Conectando...</span>
                 </div>
-                <button class="btn-icon" id="refreshBtn" onclick="app.forceRefresh()" title="Actualizar datos ahora">
+                <button class="btn-icon" id="refreshBtn" onclick="app.forceRefresh()" title="Actualizar datos ahora" aria-label="Actualizar datos ahora">
                     <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2.2" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/></svg>
                 </button>
             </div>
@@ -67,28 +69,38 @@
 
                 <form class="search-form" id="searchForm" onsubmit="app.handleSearchSubmit(event)">
                     <div class="search-input-wrapper">
-                        <span class="search-icon">🔍</span>
+                        <span class="search-icon" aria-hidden="true">🔍</span>
                         <input 
                             type="text" 
                             id="trainInput" 
                             class="search-input" 
                             placeholder="Introduce el número de tren..." 
+                            maxlength="15"
+                            inputmode="text"
                             autocomplete="off" 
                             autocorrect="off" 
                             autocapitalize="off" 
                             spellcheck="false"
+                            aria-label="Número de tren a consultar"
                             oninput="app.handleInputSearch(event)"
+                            onkeydown="app.handleInputKeydown(event)"
                         >
-                        <button type="button" class="btn-clear" id="btnClear" onclick="app.clearSearch()" style="display:none;" title="Limpiar">✕</button>
+                        <button type="button" class="btn-clear" id="btnClear" onclick="app.clearSearch()" style="display:none;" title="Limpiar" aria-label="Borrar búsqueda">✕</button>
                         
                         <!-- Desplegable con sugerencias en vivo -->
-                        <div class="autocomplete-dropdown" id="autocompleteDropdown" style="display:none;"></div>
+                        <div class="autocomplete-dropdown" id="autocompleteDropdown" role="listbox" style="display:none;"></div>
                     </div>
-                    <button type="submit" class="btn-primary">
+                    <button type="submit" class="btn-primary" aria-label="Consultar tren">
                         <span>Consultar</span>
                         <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2.5" fill="none"><polyline points="9 18 15 12 9 6"></polyline></svg>
                     </button>
                 </form>
+
+                <!-- Búsquedas recientes del usuario -->
+                <div class="recent-access" id="recentAccess" style="display:none;">
+                    <span class="quick-title">Tus búsquedas recientes:</span>
+                    <div class="quick-chips" id="recentChips"></div>
+                </div>
 
                 <!-- Accesos rápidos / Sugerencias de trenes en circulación -->
                 <div class="quick-access">
@@ -113,9 +125,21 @@
                             </div>
                         </div>
 
-                        <div class="detail-status-pill" id="detailStatusPill">
-                            <span class="status-indicator"></span>
-                            <span class="status-label" id="detailStatusLabel">En hora</span>
+                        <div class="detail-header-right">
+                            <div class="detail-status-pill" id="detailStatusPill">
+                                <span class="status-indicator"></span>
+                                <span class="status-label" id="detailStatusLabel">En hora</span>
+                            </div>
+
+                            <div class="detail-actions">
+                                <button type="button" class="btn-action" id="btnShare" onclick="app.shareTrain()" title="Copiar enlace directo de este tren" aria-label="Copiar enlace directo">
+                                    <svg viewBox="0 0 24 24" width="15" height="15" stroke="currentColor" stroke-width="2.2" fill="none"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg>
+                                    <span id="shareBtnText">Compartir</span>
+                                </button>
+                                <button type="button" class="btn-action btn-subtle" onclick="app.showHomeView()" title="Realizar otra búsqueda" aria-label="Buscar otro tren">
+                                    🔍 Nueva Búsqueda
+                                </button>
+                            </div>
                         </div>
                     </div>
 
