@@ -1,0 +1,741 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Auditoría Comparativa — Simuladores del Sistema Solar</title>
+  <style>
+    :root {
+      --bg-body: #070b14;
+      --bg-panel: #0f172a;
+      --bg-row: #162036;
+      --bg-row-hover: #1e293b;
+      --bg-detail: #0b1120;
+      --border: #263554;
+      --text-main: #f1f5f9;
+      --text-muted: #94a3b8;
+      --accent-orrery: #34d399;
+      --accent-orrery-bg: rgba(52, 211, 153, 0.14);
+      --accent-helios: #38bdf8;
+      --accent-helios-bg: rgba(56, 189, 248, 0.14);
+      --amber: #f59e0b;
+      --font-sans: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      --font-mono: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background: radial-gradient(circle at top, #111c35 0%, var(--bg-body) 70%);
+      color: var(--text-main);
+      font-family: var(--font-sans);
+      line-height: 1.55;
+      padding: 32px 16px 64px;
+      min-height: 100vh;
+    }
+
+    .container {
+      max-width: 1040px;
+      margin: 0 auto;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 28px;
+    }
+
+    .eyebrow {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.16em;
+      color: var(--accent-helios);
+      font-weight: 700;
+      margin-bottom: 6px;
+    }
+
+    h1 {
+      font-size: 26px;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      margin-bottom: 8px;
+    }
+
+    .subtitle {
+      color: var(--text-muted);
+      font-size: 14px;
+    }
+
+    /* Tarjetas de Nota Final */
+    .scoreboard {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 18px;
+      margin-bottom: 24px;
+    }
+
+    .score-card {
+      background: var(--bg-panel);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 20px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 12px 28px rgba(0, 0, 0, 0.45);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .score-card.orrery {
+      border-top: 3px solid var(--accent-orrery);
+    }
+
+    .score-card.helios {
+      border-top: 3px solid var(--accent-helios);
+    }
+
+    .model-info h2 {
+      font-size: 18px;
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+
+    .model-file {
+      font-family: var(--font-mono);
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-bottom: 8px;
+    }
+
+    .tech-tag {
+      display: inline-block;
+      font-size: 11px;
+      font-weight: 600;
+      padding: 3px 9px;
+      border-radius: 999px;
+    }
+
+    .orrery .tech-tag {
+      background: var(--accent-orrery-bg);
+      color: var(--accent-orrery);
+    }
+
+    .helios .tech-tag {
+      background: var(--accent-helios-bg);
+      color: var(--accent-helios);
+    }
+
+    .total-badge {
+      text-align: right;
+    }
+
+    .total-number {
+      font-family: var(--font-mono);
+      font-size: 36px;
+      font-weight: 800;
+      line-height: 1;
+    }
+
+    .orrery .total-number { color: var(--accent-orrery); }
+    .helios .total-number { color: var(--accent-helios); }
+
+    .total-label {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--text-muted);
+      margin-top: 4px;
+    }
+
+    /* Barra de herramientas */
+    .toolbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+      padding: 0 4px;
+    }
+
+    .toolbar-hint {
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+
+    .btn-toggle-all {
+      background: var(--bg-row);
+      color: var(--text-main);
+      border: 1px solid var(--border);
+      padding: 7px 14px;
+      border-radius: 8px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+
+    .btn-toggle-all:hover {
+      border-color: var(--accent-helios);
+      background: var(--bg-row-hover);
+    }
+
+    /* Tabla Comparativa Desplegable */
+    .comp-table {
+      background: var(--bg-panel);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      overflow: hidden;
+      box-shadow: 0 14px 34px rgba(0, 0, 0, 0.5);
+    }
+
+    .table-header {
+      display: grid;
+      grid-template-columns: 1.5fr 90px 1fr 1fr;
+      padding: 14px 20px;
+      background: rgba(15, 23, 42, 0.95);
+      border-bottom: 1px solid var(--border);
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--text-muted);
+      align-items: center;
+    }
+
+    .th-center { text-align: center; }
+
+    details.cat-item {
+      border-bottom: 1px solid var(--border);
+    }
+
+    details.cat-item:last-of-type {
+      border-bottom: none;
+    }
+
+    summary.cat-summary {
+      display: grid;
+      grid-template-columns: 1.5fr 90px 1fr 1fr;
+      padding: 16px 20px;
+      background: var(--bg-row);
+      cursor: pointer;
+      align-items: center;
+      list-style: none;
+      transition: background 0.15s ease;
+      user-select: none;
+    }
+
+    summary.cat-summary::-webkit-details-marker {
+      display: none;
+    }
+
+    summary.cat-summary:hover {
+      background: var(--bg-row-hover);
+    }
+
+    .cat-title-wrap {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 600;
+      font-size: 15px;
+    }
+
+    .chevron {
+      display: inline-flex;
+      width: 20px;
+      height: 20px;
+      align-items: center;
+      justify-content: center;
+      border-radius: 5px;
+      background: rgba(255, 255, 255, 0.06);
+      color: var(--text-muted);
+      font-size: 11px;
+      transition: transform 0.2s ease, background 0.2s ease, color 0.2s ease;
+    }
+
+    details[open] .chevron {
+      transform: rotate(90deg);
+      background: var(--accent-helios-bg);
+      color: var(--accent-helios);
+    }
+
+    .weight-pill {
+      text-align: center;
+      font-family: var(--font-mono);
+      font-size: 12px;
+      color: var(--amber);
+      background: rgba(245, 158, 11, 0.12);
+      padding: 3px 8px;
+      border-radius: 6px;
+      width: fit-content;
+      margin: 0 auto;
+    }
+
+    .score-cell {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .grade-pill {
+      font-family: var(--font-mono);
+      font-size: 15px;
+      font-weight: 700;
+      padding: 3px 12px;
+      border-radius: 8px;
+    }
+
+    .grade-orrery {
+      background: var(--accent-orrery-bg);
+      color: var(--accent-orrery);
+      border: 1px solid rgba(52, 211, 153, 0.3);
+    }
+
+    .grade-helios {
+      background: var(--accent-helios-bg);
+      color: var(--accent-helios);
+      border: 1px solid rgba(56, 189, 248, 0.3);
+    }
+
+    .mini-bar {
+      width: 110px;
+      height: 5px;
+      background: rgba(255, 255, 255, 0.08);
+      border-radius: 99px;
+      overflow: hidden;
+    }
+
+    .mini-fill-orrery {
+      height: 100%;
+      background: var(--accent-orrery);
+    }
+
+    .mini-fill-helios {
+      height: 100%;
+      background: var(--accent-helios);
+    }
+
+    /* Contenido Oculto Desplegable */
+    .cat-details {
+      background: var(--bg-detail);
+      padding: 18px 22px 22px;
+      border-top: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .subtable {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+    }
+
+    .subtable th {
+      text-align: left;
+      padding: 8px 12px;
+      border-bottom: 1px solid var(--border);
+      color: var(--text-muted);
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+
+    .subtable td {
+      padding: 10px 12px;
+      border-bottom: 1px solid rgba(38, 53, 84, 0.5);
+      vertical-align: top;
+    }
+
+    .subtable tr:last-child td {
+      border-bottom: none;
+    }
+
+    .subtable td:first-child {
+      font-weight: 600;
+      color: #cbd5e1;
+      width: 24%;
+    }
+
+    .subtable td:nth-child(2),
+    .subtable td:nth-child(3) {
+      width: 38%;
+    }
+
+    .sub-score {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      font-weight: 700;
+      padding: 1px 6px;
+      border-radius: 4px;
+      margin-left: 6px;
+    }
+
+    /* Fila Pie de Tabla (Total) */
+    .table-footer {
+      display: grid;
+      grid-template-columns: 1.5fr 90px 1fr 1fr;
+      padding: 18px 20px;
+      background: #090e1a;
+      border-top: 2px solid var(--border);
+      align-items: center;
+      font-weight: 700;
+    }
+
+    .footer-title {
+      font-size: 15px;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--text-main);
+    }
+
+    @media (max-width: 760px) {
+      .scoreboard { grid-template-columns: 1fr; }
+      .table-header, summary.cat-summary, .table-footer {
+        grid-template-columns: 1.3fr 60px 1fr 1fr;
+        padding: 12px;
+      }
+      .mini-bar { width: 70px; }
+      .subtable, .subtable tbody, .subtable tr, .subtable td {
+        display: block;
+        width: 100% !important;
+      }
+      .subtable thead { display: none; }
+      .subtable tr {
+        margin-bottom: 12px;
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        padding: 8px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <header>
+    <div class="eyebrow">Auditoría Técnica de Simuladores</div>
+    <h1>Comparativa de Rendimiento, Física y Gráficos 3D</h1>
+    <p class="subtitle">Haz clic en cada categoría para desplegar u ocultar la justificación técnica detallada.</p>
+  </header>
+
+  <!-- Marcador Global -->
+  <div class="scoreboard">
+    <div class="score-card orrery">
+      <div class="model-info">
+        <h2>Orrery</h2>
+        <div class="model-file">Solar_GPT6AstraM.html</div>
+        <span class="tech-tag">WebGL 2 · Shaders GLSL ES 3.00</span>
+      </div>
+      <div class="total-badge">
+        <div class="total-number">9.7</div>
+        <div class="total-label">Nota Final / 10</div>
+      </div>
+    </div>
+
+    <div class="score-card helios">
+      <div class="model-info">
+        <h2>Helios 3D</h2>
+        <div class="model-file">Solar_GArgonM.html</div>
+        <span class="tech-tag">Canvas 2D · Software Sphere Shader</span>
+      </div>
+      <div class="total-badge">
+        <div class="total-number">9.0</div>
+        <div class="total-label">Nota Final / 10</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Barra de control -->
+  <div class="toolbar">
+    <span class="toolbar-hint">Textos explicativos ocultos por defecto · Pulsa una fila para expandir</span>
+    <button id="toggleAllBtn" class="btn-toggle-all">Desplegar todas las categorías</button>
+  </div>
+
+  <!-- Tabla de Categorías (Acordeones cerrados por defecto) -->
+  <div class="comp-table">
+    <div class="table-header">
+      <div>Categoría / Criterio</div>
+      <div class="th-center">Peso</div>
+      <div class="th-center">Solar_GPT6AstraM (Orrery)</div>
+      <div class="th-center">Solar_GArgonM (Helios 3D)</div>
+    </div>
+
+    <!-- 0. Arquitectura Base -->
+    <details class="cat-item">
+      <summary class="cat-summary">
+        <div class="cat-title-wrap">
+          <span class="chevron">▶</span>
+          <span>0. Arquitectura y Restricciones Base</span>
+        </div>
+        <div class="weight-pill">10%</div>
+        <div class="score-cell">
+          <span class="grade-pill grade-orrery">10.0 / 10</span>
+          <div class="mini-bar"><div class="mini-fill-orrery" style="width: 100%"></div></div>
+        </div>
+        <div class="score-cell">
+          <span class="grade-pill grade-helios">10.0 / 10</span>
+          <div class="mini-bar"><div class="mini-fill-helios" style="width: 100%"></div></div>
+        </div>
+      </summary>
+      <div class="cat-details">
+        <table class="subtable">
+          <thead>
+            <tr>
+              <th>Sub-criterio</th>
+              <th>Solar_GPT6AstraM.html (Orrery)</th>
+              <th>Solar_GArgonM.html (Helios 3D)</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Ejecución 100% Offline y Single-File</td>
+              <td>Cumple íntegramente. Un único archivo HTML autocontenido sin CDNs, sin imágenes externas ni peticiones de red <span class="sub-score grade-orrery">10/10</span></td>
+              <td>Cumple íntegramente. Un único archivo HTML autocontenido sin servidores ni librerías externas <span class="sub-score grade-helios">10/10</span></td>
+            </tr>
+            <tr>
+              <td>APIs Gráficas Nativas</td>
+              <td>Usa <strong>WebGL 2 nativo</strong> para el renderizado 3D y un Canvas 2D superpuesto para las etiquetas <span class="sub-score grade-orrery">10/10</span></td>
+              <td>Usa <strong>Canvas 2D nativo</strong> con un rasterizador esférico 3D por software escrito desde cero sobre buffers <code>ImageData</code> <span class="sub-score grade-helios">10/10</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </details>
+
+    <!-- 1. Física y Astronomía -->
+    <details class="cat-item">
+      <summary class="cat-summary">
+        <div class="cat-title-wrap">
+          <span class="chevron">▶</span>
+          <span>1. Física y Astronomía</span>
+        </div>
+        <div class="weight-pill">30%</div>
+        <div class="score-cell">
+          <span class="grade-pill grade-orrery">9.6 / 10</span>
+          <div class="mini-bar"><div class="mini-fill-orrery" style="width: 96%"></div></div>
+        </div>
+        <div class="score-cell">
+          <span class="grade-pill grade-helios">8.8 / 10</span>
+          <div class="mini-bar"><div class="mini-fill-helios" style="width: 88%"></div></div>
+        </div>
+      </summary>
+      <div class="cat-details">
+        <table class="subtable">
+          <thead>
+            <tr>
+              <th>Sub-criterio</th>
+              <th>Solar_GPT6AstraM.html (Orrery)</th>
+              <th>Solar_GArgonM.html (Helios 3D)</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Órbitas Keplerianas J2000 y Newton-Raphson</td>
+              <td>Elementos J2000 de JPL/Horizons. Solver Newton-Raphson <strong>salvaguardado con bisección</strong> (48 iteraciones, tolerancia <code>1e-13 rad</code>) <span class="sub-score grade-orrery">10/10</span></td>
+              <td>Elementos J2000 de JPL. Solver Newton-Raphson estándar con límite de 18 iteraciones y tolerancia <code>1e-10 rad</code> (sin bisección de respaldo) <span class="sub-score grade-helios">9.0/10</span></td>
+            </tr>
+            <tr>
+              <td>Catálogo de Cuerpos y Lunas</td>
+              <td>28 cuerpos: Sol, 8 planetas, 5 planetas enanos, 12 lunas (con precesión lunar y planos ecuatoriales) y 2 cometas (Halley y Encke) <span class="sub-score grade-orrery">10/10</span></td>
+              <td>29 cuerpos: Sol, 8 planetas, 5 planetas enanos, 12 lunas y <strong>3 cometas</strong> (añade Hale-Bopp) <span class="sub-score grade-helios">10/10</span></td>
+            </tr>
+            <tr>
+              <td>Cinturones y Huecos de Kirkwood</td>
+              <td><strong>5.260 objetos:</strong> 3.200 del cinturón principal (4 huecos de Kirkwood) + 180 Hildas (3:2) + <strong>180 Troyanos de Júpiter</strong> (1:1) + 1.700 Kuiper <span class="sub-score grade-orrery">10/10</span></td>
+              <td><strong>4.800 objetos:</strong> 3.200 del cinturón principal (4 huecos de Kirkwood + 5% Hildas) + 1.600 Kuiper (25% Plutinos + clásicos) <span class="sub-score grade-helios">9.0/10</span></td>
+            </tr>
+            <tr>
+              <td>Rotación Axial y Oblicuidad</td>
+              <td>Matrices de orientación 3×3 completas. Venus y Urano rotan retrógrados por su oblicuidad &gt;90°, pero Tritón (<code>tilt=0</code>) ignora el signo negativo de giro <span class="sub-score grade-orrery">8.5/10</span></td>
+              <td>Aplica oblicuidad 3D y respeta explícitamente el signo negativo de rotación (<code>rotDays &lt; 0</code>) en Venus, Urano, Plutón y Tritón <span class="sub-score grade-helios">9.5/10</span></td>
+            </tr>
+            <tr>
+              <td>Integrador N-Body y Deriva de Energía</td>
+              <td>Velocity Verlet baricéntrico con paso fijo estricto de <code>0.125 d</code> e interpolación sub-paso. Limita la velocidad antes que degradar el paso <span class="sub-score grade-orrery">10/10</span></td>
+              <td>Velocity Verlet baricéntrico (Sol + 8 planetas + Plutón) con <code>dt &le; 0.10 d</code>. Si se fuerza a 100 años/s, el tope de 2.500 sub-pasos agranda <code>dt</code> <span class="sub-score grade-helios">7.5/10</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </details>
+
+    <!-- 2. Renderizado 3D -->
+    <details class="cat-item">
+      <summary class="cat-summary">
+        <div class="cat-title-wrap">
+          <span class="chevron">▶</span>
+          <span>2. Renderizado y Gráficos 3D</span>
+        </div>
+        <div class="weight-pill">25%</div>
+        <div class="score-cell">
+          <span class="grade-pill grade-orrery">9.8 / 10</span>
+          <div class="mini-bar"><div class="mini-fill-orrery" style="width: 98%"></div></div>
+        </div>
+        <div class="score-cell">
+          <span class="grade-pill grade-helios">8.5 / 10</span>
+          <div class="mini-bar"><div class="mini-fill-helios" style="width: 85%"></div></div>
+        </div>
+      </summary>
+      <div class="cat-details">
+        <table class="subtable">
+          <thead>
+            <tr>
+              <th>Sub-criterio</th>
+              <th>Solar_GPT6AstraM.html (Orrery)</th>
+              <th>Solar_GArgonM.html (Helios 3D)</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Proyección 3D y Profundidad</td>
+              <td><strong>Logarithmic Depth Buffer</strong> en GLSL (<code>gl_FragDepth</code>), permitiendo zoom extremo sin <em>z-fighting</em> tanto en escala didáctica como real <span class="sub-score grade-orrery">10/10</span></td>
+              <td>Proyección en perspectiva con <strong>Algoritmo del Pintor</strong> en CPU. Anillos divididos en mitad trasera y delantera <span class="sub-score grade-helios">8.5/10</span></td>
+            </tr>
+            <tr>
+              <td>Texturas Procedurales y Nubes</td>
+              <td>Texturas 512×256 con mipmaps, nubes terrestres <strong>animadas dinámicamente</strong>, reflejo especular en océanos y Haumea elipsoidal <span class="sub-score grade-orrery">9.5/10</span></td>
+              <td>Texturas 128×64 renderizadas en un buffer esférico de hasta 112×112 px. Luces nocturnas y Gran Mancha Roja, pero nubes estáticas <span class="sub-score grade-helios">8.0/10</span></td>
+            </tr>
+            <tr>
+              <td>Anillos, Atmósferas y Estrellas</td>
+              <td>Anillos en los 4 gigantes con División de Cassini y sombras cruzadas planeta↔anillo. <strong>18.000 estrellas</strong> en GPU <span class="sub-score grade-orrery">10/10</span></td>
+              <td>Anillos en los 4 gigantes con División de Cassini y sombras cruzadas. <strong>5.200 estrellas</strong> + 180 nodos nebulosos de Vía Láctea <span class="sub-score grade-helios">9.0/10</span></td>
+            </tr>
+            <tr>
+              <td>Eclipses Solares y Lunares</td>
+              <td>Sombra geométrica real por cono de umbra/penumbra en el fragment shader para hasta 4 lunas/planetas y Luna roja en eclipses lunares <span class="sub-score grade-orrery">10/10</span></td>
+              <td>Detección de alineación angular con aviso en el HUD, Luna roja y oscurecimiento aproximado en el centro del disco terrestre <span class="sub-score grade-helios">8.0/10</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </details>
+
+    <!-- 3. Interfaz (HUD) -->
+    <details class="cat-item">
+      <summary class="cat-summary">
+        <div class="cat-title-wrap">
+          <span class="chevron">▶</span>
+          <span>3. Interfaz (HUD) y Usabilidad</span>
+        </div>
+        <div class="weight-pill">20%</div>
+        <div class="score-cell">
+          <span class="grade-pill grade-orrery">9.8 / 10</span>
+          <div class="mini-bar"><div class="mini-fill-orrery" style="width: 98%"></div></div>
+        </div>
+        <div class="score-cell">
+          <span class="grade-pill grade-helios">9.2 / 10</span>
+          <div class="mini-bar"><div class="mini-fill-helios" style="width: 92%"></div></div>
+        </div>
+      </summary>
+      <div class="cat-details">
+        <table class="subtable">
+          <thead>
+            <tr>
+              <th>Sub-criterio</th>
+              <th>Solar_GPT6AstraM.html (Orrery)</th>
+              <th>Solar_GArgonM.html (Helios 3D)</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Paneles, Ficha Técnica y Toggles</td>
+              <td>Panel lateral colapsable, botones de encuadre rápido (<em>Close-up</em> y <em>System</em>) y todos los toggles + visualización de ejes de rotación <span class="sub-score grade-orrery">9.5/10</span></td>
+              <td>Dos paneles laterales colapsables independientes (Catálogo jerárquico con puntos de color y Telemetría/Toggles) <span class="sub-score grade-helios">9.5/10</span></td>
+            </tr>
+            <tr>
+              <td>Regla de Distancia y Tiempo-Luz</td>
+              <td>Muestra distancia en UA y tiempo-luz, y dibuja una <strong>línea 3D directa</strong> entre ambos cuerpos en la escena <span class="sub-score grade-orrery">10/10</span></td>
+              <td>Muestra simultáneamente separación en UA, millones de km y tiempo-luz en el panel derecho (sin línea 3D en escena) <span class="sub-score grade-helios">9.0/10</span></td>
+            </tr>
+            <tr>
+              <td>Herramientas Científicas Extra</td>
+              <td>Incluye buscador automático de eclipses solares/lunares, botón de perihelio de Halley y <strong>suite interactiva de autotests físicos</strong> <span class="sub-score grade-orrery">10/10</span></td>
+              <td>Incluye tarjeta dedicada al estado del integrador (sub-pasos por fotograma y deriva) y banner automático de eclipses <span class="sub-score grade-helios">9.0/10</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </details>
+
+    <!-- 4. Rendimiento y Calidad de Código -->
+    <details class="cat-item">
+      <summary class="cat-summary">
+        <div class="cat-title-wrap">
+          <span class="chevron">▶</span>
+          <span>4. Rendimiento y Calidad de Código</span>
+        </div>
+        <div class="weight-pill">15%</div>
+        <div class="score-cell">
+          <span class="grade-pill grade-orrery">9.4 / 10</span>
+          <div class="mini-bar"><div class="mini-fill-orrery" style="width: 94%"></div></div>
+        </div>
+        <div class="score-cell">
+          <span class="grade-pill grade-helios">9.3 / 10</span>
+          <div class="mini-bar"><div class="mini-fill-helios" style="width: 93%"></div></div>
+        </div>
+      </summary>
+      <div class="cat-details">
+        <table class="subtable">
+          <thead>
+            <tr>
+              <th>Sub-criterio</th>
+              <th>Solar_GPT6AstraM.html (Orrery)</th>
+              <th>Solar_GArgonM.html (Helios 3D)</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Rendimiento y Fluidez (&ge;60 FPS)</td>
+              <td>Mueve más de <strong>23.280 objetos</strong> a 60 FPS en GPU mediante <code>Float32Array</code> y llamadas agrupadas <code>gl.POINTS</code> / <code>gl.LINES</code> <span class="sub-score grade-orrery">10/10</span></td>
+              <td>Mueve más de <strong>10.029 objetos</strong> a 60 FPS en CPU mediante estructuras <em>Structure-of-Arrays</em> (SOA) en <code>Float32Array</code> <span class="sub-score grade-helios">8.5/10</span></td>
+            </tr>
+            <tr>
+              <td>Legibilidad, Estructura y Comentarios</td>
+              <td>Dividido en 10 secciones con unidades documentadas, pero escrito en estilo compacto/semi-minificado (~240 líneas) <span class="sub-score grade-orrery">8.5/10</span></td>
+              <td>Código sumamente limpio, legible y didáctico (~1.050 líneas), dividido en 14 secciones con todas las unidades físicas comentadas <span class="sub-score grade-helios">10/10</span></td>
+            </tr>
+            <tr>
+              <td>Gestión de Eventos y Robustez</td>
+              <td>Carga asíncrona no bloqueante con pantalla de progreso, pausa en pestaña inactiva (<code>visibilitychange</code>) y captura de <code>webglcontextlost</code> <span class="sub-score grade-orrery">10/10</span></td>
+              <td>Clamping de <code>dtSec</code> para pestañas inactivas, redimensionado limpio y cero fugas de memoria <span class="sub-score grade-helios">9.5/10</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </details>
+
+    <!-- Pie de Tabla con Nota Ponderada Final -->
+    <div class="table-footer">
+      <div class="footer-title">Calificación Final Ponderada</div>
+      <div class="weight-pill">100%</div>
+      <div class="score-cell">
+        <span class="grade-pill grade-orrery" style="font-size: 17px;">9.7 / 10</span>
+      </div>
+      <div class="score-cell">
+        <span class="grade-pill grade-helios" style="font-size: 17px;">9.0 / 10</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  const toggleBtn = document.getElementById('toggleAllBtn');
+  const detailsList = document.querySelectorAll('details.cat-item');
+  let allOpen = false;
+
+  toggleBtn.addEventListener('click', () => {
+    allOpen = !allOpen;
+    detailsList.forEach(d => {
+      d.open = allOpen;
+    });
+    toggleBtn.textContent = allOpen
+      ? 'Ocultar todas las categorías'
+      : 'Desplegar todas las categorías';
+  });
+</script>
+
+</body>
+</html>
