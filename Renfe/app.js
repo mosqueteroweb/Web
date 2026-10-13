@@ -156,7 +156,7 @@ function renderRecentSearches() {
         const chip = document.createElement('button');
         chip.type = 'button';
         chip.className = 'chip recent-chip';
-        chip.innerHTML = `<span>#${escapeHTML(r.num)}</span> <small style="color:var(--text-muted);font-weight:600;">(${escapeHTML(r.prod)})</small>`;
+        chip.innerHTML = `<span>#${escapeHTML(r.num)}</span> <small style="color:var(--text-muted);font-weight:700;">· ${escapeHTML(r.prod)}</small>`;
         chip.onclick = () => {
             const input = document.getElementById('trainInput');
             input.value = r.num;
@@ -324,18 +324,18 @@ function getStationCoords(code) {
 function formatDelay(delayStr) {
     const min = parseInt(delayStr, 10);
     if (isNaN(min) || min === 0) {
-        return { text: 'En hora (0 min)', class: 'ontime', min: 0 };
+        return { text: 'En hora · Sin retraso', class: 'ontime', min: 0 };
     }
     if (min < 0) {
-        return { text: `Adelantado (${Math.abs(min)} min)`, class: 'ontime', min };
+        return { text: `Adelantado ${Math.abs(min)} min`, class: 'ontime', min };
     }
     if (min <= 5) {
-        return { text: `Retraso leve (+${min} min)`, class: 'ontime', min };
+        return { text: `Retraso leve de +${min} min`, class: 'ontime', min };
     }
     if (min <= 15) {
-        return { text: `Retraso moderado (+${min} min)`, class: 'slight', min };
+        return { text: `Retraso de +${min} min`, class: 'slight', min };
     }
-    return { text: `Retraso significativo (+${min} min)`, class: 'heavy', min };
+    return { text: `Retraso importante de +${min} min`, class: 'heavy', min };
 }
 
 // ============================================================================
@@ -501,11 +501,28 @@ function searchTrain(query) {
     }
 }
 
+function showSearchForm() {
+    const searchCard = document.getElementById('searchCard');
+    if (searchCard) {
+        searchCard.style.display = 'block';
+        searchCard.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+    const input = document.getElementById('trainInput');
+    if (input) {
+        input.focus();
+        input.select();
+    }
+}
+
 function displayTrain(train, resetMapView = true) {
     state.currentTrain = train;
     const prod = getProductInfo(train.codProduct);
     const delay = formatDelay(train.ultRetraso);
     const mat = getMaterialInfo(train.mat);
+
+    // Ocultar formulario de búsqueda para dejar la tarjeta limpia
+    const searchCard = document.getElementById('searchCard');
+    if (searchCard) searchCard.style.display = 'none';
 
     // Guardar en búsquedas recientes
     saveRecentSearch(train.codComercial, prod.name);
@@ -523,59 +540,35 @@ function displayTrain(train, resetMapView = true) {
     const servEl = document.getElementById('detailServiceName');
     if (servEl) servEl.textContent = `${prod.name} · Transporte Ferroviario`;
 
-    // 2. TARJETA 1: TRAYECTO (Origen y Destino máx. 15 caracteres)
-    const originShort = formatStationMax15(train.codOrigen);
-    const destShort = formatStationMax15(train.codDestino);
-    const origEl = document.getElementById('detailOriginShort');
-    if (origEl) origEl.textContent = originShort;
-    const destEl = document.getElementById('detailDestinationShort');
-    if (destEl) destEl.textContent = destShort;
-
-    // Buscar ruta para horarios de origen y fin
-    const route = state.routes.find(r => normalizeTrainId(r.idTren) === normalizeTrainId(train.codComercial));
-    if (route && route.estaciones && route.estaciones.length > 0) {
-        const first = route.estaciones[0];
-        const last = route.estaciones[route.estaciones.length - 1];
-        const depEl = document.getElementById('detailDepTime');
-        if (depEl) depEl.textContent = first.hs || first.h ? `Salida: ${first.hs || first.h}` : 'Salida: --:--';
-        const arrEl = document.getElementById('detailArrTime');
-        if (arrEl) arrEl.textContent = last.h || last.hs ? `Llegada: ${last.h || last.hs}` : 'Llegada: --:--';
-    } else {
-        const depEl = document.getElementById('detailDepTime');
-        if (depEl) depEl.textContent = 'Salida: --:--';
-        const arrEl = document.getElementById('detailArrTime');
-        if (arrEl) arrEl.textContent = 'Llegada: --:--';
-    }
-
-    // 3. TARJETA 2: RETRASO + PRÓXIMA PARADA
+    // 2. RETRASO Y ESTADO (PRIMERO EN LA TARJETA)
     const delayIconEl = document.getElementById('detailDelayIcon');
     const delayTextEl = document.getElementById('detailDelayText');
     const delayBanner = document.getElementById('detailDelayBanner');
 
     let delayClass = 'delay-ontime';
     let icon = '🟢';
-    let text = 'EN HORA (0 min)';
+    let text = 'EN HORA · Sin retraso';
 
     if (delay.min === 0) {
         delayClass = 'delay-ontime';
         icon = '🟢';
-        text = 'EN HORA (Sin retraso)';
+        text = 'EN HORA · Sin retraso';
     } else if (delay.min < 0) {
         delayClass = 'delay-ontime';
         icon = '🟢';
-        text = `ADELANTADO (${Math.abs(delay.min)} min)`;
+        text = `ADELANTADO · ${Math.abs(delay.min)} min`;
     } else if (delay.min <= 5) {
         delayClass = 'delay-slight';
         icon = '🟡';
-        text = `RETRASO LEVE (+${delay.min} min)`;
+        text = `RETRASO LEVE · +${delay.min} min`;
     } else if (delay.min <= 15) {
         delayClass = 'delay-slight';
         icon = '🟡';
-        text = `RETRASO (+${delay.min} min)`;
+        text = `RETRASO · +${delay.min} min`;
     } else {
         delayClass = 'delay-heavy';
         icon = '🔴';
-        text = `RETRASO IMPORTANTE (+${delay.min} min)`;
+        text = `RETRASO IMPORTANTE · +${delay.min} min`;
     }
 
     if (delayIconEl) delayIconEl.textContent = icon;
@@ -602,6 +595,30 @@ function displayTrain(train, resetMapView = true) {
         } else {
             nextEtaEl.textContent = 'En trayecto hacia la estación';
         }
+    }
+
+    // 3. TRAYECTO (SEGUNDO EN LA TARJETA, COMPACTO)
+    const originShort = formatStationMax15(train.codOrigen);
+    const destShort = formatStationMax15(train.codDestino);
+    const origEl = document.getElementById('detailOriginShort');
+    if (origEl) origEl.textContent = originShort;
+    const destEl = document.getElementById('detailDestinationShort');
+    if (destEl) destEl.textContent = destShort;
+
+    // Buscar ruta para horarios de origen y fin
+    const route = state.routes.find(r => normalizeTrainId(r.idTren) === normalizeTrainId(train.codComercial));
+    if (route && route.estaciones && route.estaciones.length > 0) {
+        const first = route.estaciones[0];
+        const last = route.estaciones[route.estaciones.length - 1];
+        const depEl = document.getElementById('detailDepTime');
+        if (depEl) depEl.textContent = first.hs || first.h || '--:--';
+        const arrEl = document.getElementById('detailArrTime');
+        if (arrEl) arrEl.textContent = last.h || last.hs || '--:--';
+    } else {
+        const depEl = document.getElementById('detailDepTime');
+        if (depEl) depEl.textContent = '--:--';
+        const arrEl = document.getElementById('detailArrTime');
+        if (arrEl) arrEl.textContent = '--:--';
     }
 
     // 4. DETALLES TÉCNICOS (EN DESPLEGABLE)
@@ -1207,6 +1224,7 @@ window.app = {
     handleInputSearch,
     handleInputKeydown,
     clearSearch,
+    showSearchForm,
     shareTrain,
     centerMapOnTrain,
     fitMapToRoute,

@@ -61,7 +61,7 @@
         <!-- SECCIÓN 1: BÚSQUEDA Y DETALLE DEL TREN -->
         <section id="sectionSearch" class="tab-content active">
             <!-- Buscador Principal -->
-            <div class="search-card">
+            <div class="search-card" id="searchCard">
                 <div class="search-header">
                     <h2>Consulta cualquier tren por su número</h2>
                     <p>Introduce el código o número comercial del billete (ejemplo: 02143, 18773, 03122...)</p>
@@ -98,55 +98,42 @@
 
                 <!-- Búsquedas recientes del usuario -->
                 <div class="recent-access" id="recentAccess" style="display:none;">
-                    <span class="quick-title">Tus búsquedas recientes:</span>
+                    <span class="quick-title">Búsquedas recientes:</span>
                     <div class="quick-chips" id="recentChips"></div>
                 </div>
             </div>
 
             <!-- Contenedor del Detalle del Tren Consultado -->
             <div id="trainDetailContainer" class="train-detail-container" style="display: none;">
-                <!-- Tarjeta de Cabecera del Tren -->
-                <div class="senior-card detail-header-card">
-                    <div class="detail-title-group">
-                        <div class="product-badge" id="detailProductBadge">AVE</div>
-                        <div>
-                            <h2 class="train-number" id="detailTrainNumber">Tren #02143</h2>
-                            <p class="train-service-name" id="detailServiceName">Alta Velocidad Española</p>
+                <!-- TARJETA ÚNICA DEL TREN (RETRASO PRIMERO, TRAYECTO COMPACTO SEGUNDO) -->
+                <div class="senior-card unified-train-card">
+                    <!-- Cabecera del tren con botón de lupa y compartir -->
+                    <div class="detail-header-row">
+                        <div class="detail-title-group">
+                            <div class="product-badge" id="detailProductBadge">AVE</div>
+                            <div>
+                                <h2 class="train-number" id="detailTrainNumber">Tren #02143</h2>
+                                <p class="train-service-name" id="detailServiceName">Alta Velocidad Española</p>
+                            </div>
+                        </div>
+
+                        <div class="detail-header-actions">
+                            <button type="button" class="btn-action btn-search-toggle" onclick="app.showSearchForm()" title="Buscar otro tren" aria-label="Buscar otro tren">
+                                <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2.2" fill="none"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                                <span>Buscar</span>
+                            </button>
+                            <button type="button" class="btn-action" id="btnShare" onclick="app.shareTrain()" title="Copiar enlace directo de este tren" aria-label="Copiar enlace directo">
+                                <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2.2" fill="none"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg>
+                                <span id="shareBtnText">Compartir</span>
+                            </button>
                         </div>
                     </div>
 
-                    <div class="detail-header-right">
-                        <button type="button" class="btn-action" id="btnShare" onclick="app.shareTrain()" title="Copiar enlace directo de este tren" aria-label="Copiar enlace directo">
-                            <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2.2" fill="none"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg>
-                            <span id="shareBtnText">Compartir</span>
-                        </button>
-                    </div>
-                </div>
-
-                <!-- TARJETA 1: TRAYECTO (ORIGEN Y DESTINO COMBINADOS, MÁX. 15 CARACTERES) -->
-                <div class="senior-card route-card">
-                    <div class="senior-card-label">TRAYECTO</div>
-                        <div class="route-display">
-                            <div class="route-point">
-                                <span class="point-badge">SALIDA</span>
-                                <strong class="point-city" id="detailOriginShort">Madrid Atocha</strong>
-                                <span class="point-time" id="detailDepTime">09:27</span>
-                            </div>
-                            <div class="route-arrow" aria-hidden="true">➔</div>
-                            <div class="route-point">
-                                <span class="point-badge">LLEGADA</span>
-                                <strong class="point-city" id="detailDestinationShort">Barcelona Sants</strong>
-                                <span class="point-time" id="detailArrTime">12:30</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- TARJETA 2: RETRASO + PRÓXIMA PARADA -->
-                    <div class="senior-card status-card" id="detailStatusCard">
-                        <div class="senior-card-label">ESTADO Y PUNTUALIDAD</div>
+                    <!-- 1. PRIMERO: RETRASO Y ESTADO DE PUNTUALIDAD -->
+                    <div class="train-status-section">
                         <div class="delay-highlight" id="detailDelayBanner">
                             <span class="delay-icon" id="detailDelayIcon">🟢</span>
-                            <span class="delay-text" id="detailDelayText">EN HORA (0 min)</span>
+                            <span class="delay-text" id="detailDelayText">EN HORA · Sin retraso</span>
                         </div>
                         <div class="next-station-row">
                             <span class="next-station-tag">PRÓXIMA PARADA:</span>
@@ -155,68 +142,86 @@
                         </div>
                     </div>
 
-                    <!-- SECCIÓN DESPLEGABLE: DATOS TÉCNICOS -->
-                    <details class="senior-accordion" id="accordionTechnical">
-                        <summary class="accordion-summary">
-                            <span class="summary-text">ℹ️ Ver datos técnicos (material, accesibilidad)</span>
-                            <span class="summary-chevron">▼</span>
-                        </summary>
-                        <div class="accordion-body">
-                            <div class="technical-details">
-                                <div class="tech-item">
-                                    <span class="tech-label">Material Rodante:</span>
-                                    <strong class="tech-value" id="detailMaterial">CAF / Talgo Serie 102</strong>
-                                </div>
-                                <div class="tech-item">
-                                    <span class="tech-label">Matrícula / Rama:</span>
-                                    <strong class="tech-value" id="detailMatricula">--</strong>
-                                </div>
-                                <div class="tech-item">
-                                    <span class="tech-label">Accesibilidad:</span>
-                                    <strong class="tech-value" id="detailAccessible">♿ Servicio Atendo / PMR</strong>
-                                </div>
-                                <div class="tech-item">
-                                    <span class="tech-label">Último punto registrado:</span>
-                                    <strong class="tech-value" id="detailLastStation">--</strong>
-                                </div>
+                    <!-- 2. DESPUÉS: ORIGEN Y DESTINO (COMPACTOS, OCUPAN MENOS) -->
+                    <div class="compact-route-section">
+                        <div class="route-box-compact">
+                            <div class="route-col">
+                                <span class="route-label">SALIDA</span>
+                                <strong class="route-city-text" id="detailOriginShort">Madrid Atocha</strong>
+                                <span class="route-time-text" id="detailDepTime">09:27</span>
+                            </div>
+                            <div class="route-arrow-icon" aria-hidden="true">➔</div>
+                            <div class="route-col">
+                                <span class="route-label">LLEGADA</span>
+                                <strong class="route-city-text" id="detailDestinationShort">Barcelona Sants</strong>
+                                <span class="route-time-text" id="detailArrTime">12:30</span>
                             </div>
                         </div>
-                    </details>
+                    </div>
+                </div>
 
-                    <!-- SECCIÓN DESPLEGABLE: ITINERARIO Y PARADAS -->
-                    <details class="senior-accordion" id="accordionStops">
-                        <summary class="accordion-summary">
-                            <span class="summary-text">⏱️ Ver todas las paradas y horarios (<span id="stopsSummaryBadge">0 paradas</span>)</span>
-                            <span class="summary-chevron">▼</span>
-                        </summary>
-                        <div class="accordion-body">
-                            <div class="timeline-wrapper">
-                                <div class="timeline-container" id="stationsTimeline"></div>
+                <!-- 1. PRIMER DESPLEGABLE: MAPA EN VIVO -->
+                <details class="senior-accordion" id="accordionMap" ontoggle="if(this.open) setTimeout(() => app.refreshMap(), 150)">
+                    <summary class="accordion-summary">
+                        <span class="summary-text">🗺️ Ver posición del tren en el mapa</span>
+                        <span class="summary-chevron">▼</span>
+                    </summary>
+                    <div class="accordion-body">
+                        <div class="map-controls">
+                            <button class="btn-sm" type="button" onclick="app.centerMapOnTrain()">🎯 Centrar en el tren</button>
+                            <button class="btn-sm" type="button" onclick="app.fitMapToRoute()">↔️ Ver ruta completa</button>
+                        </div>
+                        <div class="map-wrapper">
+                            <div id="trainMap" class="train-map"></div>
+                            <div class="map-legend">
+                                <span><span class="legend-dot train-dot"></span> Tren actual</span>
+                                <span><span class="legend-dot route-dot"></span> Trazado</span>
+                                <span><span class="legend-dot station-dot"></span> Estaciones</span>
                             </div>
                         </div>
-                    </details>
+                    </div>
+                </details>
 
-                    <!-- SECCIÓN DESPLEGABLE: MAPA EN VIVO -->
-                    <details class="senior-accordion" id="accordionMap" ontoggle="if(this.open) setTimeout(() => app.refreshMap(), 150)">
-                        <summary class="accordion-summary">
-                            <span class="summary-text">🗺️ Ver posición del tren en el mapa</span>
-                            <span class="summary-chevron">▼</span>
-                        </summary>
-                        <div class="accordion-body">
-                            <div class="map-controls">
-                                <button class="btn-sm" type="button" onclick="app.centerMapOnTrain()">🎯 Centrar en el tren</button>
-                                <button class="btn-sm" type="button" onclick="app.fitMapToRoute()">↔️ Ver ruta completa</button>
+                <!-- 2. SEGUNDO DESPLEGABLE: ITINERARIO Y PARADAS -->
+                <details class="senior-accordion" id="accordionStops">
+                    <summary class="accordion-summary">
+                        <span class="summary-text">⏱️ Ver todas las paradas y horarios · <span id="stopsSummaryBadge">0 paradas</span></span>
+                        <span class="summary-chevron">▼</span>
+                    </summary>
+                    <div class="accordion-body">
+                        <div class="timeline-wrapper">
+                            <div class="timeline-container" id="stationsTimeline"></div>
+                        </div>
+                    </div>
+                </details>
+
+                <!-- 3. TERCER DESPLEGABLE: DATOS TÉCNICOS -->
+                <details class="senior-accordion" id="accordionTechnical">
+                    <summary class="accordion-summary">
+                        <span class="summary-text">ℹ️ Ver datos técnicos (material, accesibilidad)</span>
+                        <span class="summary-chevron">▼</span>
+                    </summary>
+                    <div class="accordion-body">
+                        <div class="technical-details">
+                            <div class="tech-item">
+                                <span class="tech-label">Material Rodante:</span>
+                                <strong class="tech-value" id="detailMaterial">CAF / Talgo Serie 102</strong>
                             </div>
-                            <div class="map-wrapper">
-                                <div id="trainMap" class="train-map"></div>
-                                <div class="map-legend">
-                                    <span><span class="legend-dot train-dot"></span> Tren actual</span>
-                                    <span><span class="legend-dot route-dot"></span> Trazado</span>
-                                    <span><span class="legend-dot station-dot"></span> Estaciones</span>
-                                </div>
+                            <div class="tech-item">
+                                <span class="tech-label">Matrícula / Rama:</span>
+                                <strong class="tech-value" id="detailMatricula">--</strong>
+                            </div>
+                            <div class="tech-item">
+                                <span class="tech-label">Accesibilidad:</span>
+                                <strong class="tech-value" id="detailAccessible">♿ Servicio Atendo / PMR</strong>
+                            </div>
+                            <div class="tech-item">
+                                <span class="tech-label">Último punto registrado:</span>
+                                <strong class="tech-value" id="detailLastStation">--</strong>
                             </div>
                         </div>
-                    </details>
+                    </div>
+                </details>
             </div>
 
             <!-- Estado Vacío Inicial -->

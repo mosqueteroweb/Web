@@ -542,28 +542,48 @@ body {
     margin-bottom: 0.75rem;
 }
 
-/* Tarjeta Cabecera: Producto, número y compartir */
-.detail-header-card {
+/* ==========================================================================
+   TARJETA ÚNICA DEL TREN (SENIOR +80 AÑOS)
+   Retraso y estado primero, trayecto compacto segundo. Todo integrado.
+   ========================================================================== */
+.unified-train-card {
+    background: #ffffff;
+    border: 2.5px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    padding: 1.15rem 1rem;
+    margin-bottom: 1.15rem;
+    box-shadow: var(--shadow-sm);
+    width: 100%;
+    box-sizing: border-box;
+    border-top: 6px solid var(--renfe-purple);
+}
+
+/* Fila superior: Tipo tren, número, botón lupa y botón compartir */
+.detail-header-row {
     display: flex;
     align-items: center;
     justify-content: space-between;
     flex-wrap: wrap;
-    gap: 0.75rem;
-    border-top: 6px solid var(--renfe-purple);
+    gap: 0.65rem;
+    padding-bottom: 0.85rem;
+    margin-bottom: 0.95rem;
+    border-bottom: 1.5px solid var(--border-subtle);
+    width: 100%;
+    box-sizing: border-box;
 }
 
 .detail-title-group {
     display: flex;
     align-items: center;
-    gap: 0.75rem;
+    gap: 0.65rem;
     flex-wrap: wrap;
 }
 
 .product-badge {
-    padding: 0.45rem 0.95rem;
+    padding: 0.45rem 0.85rem;
     border-radius: var(--radius-sm);
     font-weight: 800;
-    font-size: 1.1rem;
+    font-size: 1.05rem;
     letter-spacing: 0.03em;
     color: white;
     background: var(--renfe-purple);
@@ -589,9 +609,16 @@ body {
 }
 
 .train-service-name {
-    font-size: 0.95rem;
+    font-size: 0.92rem;
     color: var(--text-secondary);
     font-weight: 600;
+}
+
+.detail-header-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex-wrap: wrap;
 }
 
 .btn-action {
@@ -600,14 +627,15 @@ body {
     gap: 0.45rem;
     background: #f8fafc;
     border: 2px solid var(--border-color);
-    padding: 0.6rem 1.15rem;
+    padding: 0.55rem 1rem;
     border-radius: var(--radius-md);
-    font-size: 1rem;
+    font-size: 0.95rem;
     font-weight: 800;
     color: var(--text-primary);
     cursor: pointer;
     transition: all 0.15s ease;
-    min-height: 48px;
+    min-height: 46px;
+    box-sizing: border-box;
 }
 
 .btn-action:hover {
@@ -616,117 +644,49 @@ body {
     color: var(--renfe-purple);
 }
 
-/* ==========================================================================
-   TARJETA 1: TRAYECTO (ORIGEN ➔ DESTINO)
-   Mobile-First: Visualización vertical para que nada se corte ni se encoja.
-   ========================================================================== */
-.route-card {
-    border-left: 8px solid var(--renfe-purple);
-}
-
-.route-display {
-    display: flex;
-    flex-direction: column;
-    gap: 0.75rem;
-    width: 100%;
-    box-sizing: border-box;
-}
-
-.route-point {
-    display: flex;
-    flex-direction: column;
-    width: 100%;
-    background: #f8fafc;
-    border: 2px solid var(--border-subtle);
-    border-radius: var(--radius-md);
-    padding: 0.85rem 1.1rem;
-    box-sizing: border-box;
-}
-
-.point-badge {
-    font-size: 0.82rem;
-    font-weight: 800;
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
-    color: var(--text-muted);
-    margin-bottom: 0.25rem;
-}
-
-.point-city {
-    font-size: 1.75rem; /* ~28px */
-    font-weight: 800;
-    color: var(--text-primary);
-    line-height: 1.2;
-    word-break: break-word;
-}
-
-.point-time {
-    font-size: 1.25rem;
-    font-weight: 700;
+.btn-search-toggle {
+    background: var(--renfe-purple-subtle);
     color: var(--renfe-purple);
-    margin-top: 0.35rem;
+    border-color: var(--renfe-purple);
 }
 
-.route-arrow {
-    font-size: 1.85rem;
-    font-weight: 900;
-    color: var(--renfe-purple);
-    text-align: center;
-    line-height: 1;
-    margin: 0.1rem 0;
-    user-select: none;
-}
-
-/* En tablet/desktop (>= 640px) se coloca lado a lado */
-@media (min-width: 640px) {
-    .route-display {
-        flex-direction: row;
-        align-items: center;
-        justify-content: space-between;
-        gap: 1rem;
-    }
-
-    .route-point {
-        flex: 1;
-    }
-
-    .route-arrow {
-        transform: rotate(0deg);
-        margin: 0;
-        padding: 0 0.5rem;
-    }
+.btn-search-toggle:hover {
+    background: var(--renfe-purple);
+    color: white;
 }
 
 /* ==========================================================================
-   TARJETA 2: RETRASO + PRÓXIMA PARADA
+   1. SECCIÓN RETRASO Y ESTADO (PRIMERO EN LA TARJETA)
    ========================================================================== */
-.status-card {
-    border-left: 8px solid #10b981;
+.train-status-section {
+    width: 100%;
+    margin-bottom: 0.95rem;
+    box-sizing: border-box;
 }
 
 .delay-highlight {
     display: flex;
     align-items: center;
-    gap: 0.85rem;
-    padding: 1.1rem 1.25rem;
+    gap: 0.75rem;
+    padding: 0.95rem 1.15rem;
     border-radius: var(--radius-md);
-    margin-bottom: 1rem;
-    border: 2.5px solid transparent;
+    margin-bottom: 0.65rem;
+    border: 2px solid transparent;
     width: 100%;
     box-sizing: border-box;
 }
 
 .delay-icon {
-    font-size: 2.2rem;
+    font-size: 2rem;
     line-height: 1;
     flex-shrink: 0;
 }
 
 .delay-text {
-    font-size: 1.45rem;
+    font-size: 1.35rem;
     font-weight: 800;
     letter-spacing: -0.01em;
-    line-height: 1.2;
+    line-height: 1.25;
     word-break: break-word;
 }
 
@@ -751,8 +711,8 @@ body {
 .next-station-row {
     display: flex;
     flex-direction: column;
-    gap: 0.35rem;
-    padding: 1rem 1.15rem;
+    gap: 0.25rem;
+    padding: 0.85rem 1rem;
     background: #f8fafc;
     border: 2px solid var(--border-subtle);
     border-radius: var(--radius-md);
@@ -761,7 +721,7 @@ body {
 }
 
 .next-station-tag {
-    font-size: 0.85rem;
+    font-size: 0.8rem;
     font-weight: 800;
     letter-spacing: 0.06em;
     color: var(--text-muted);
@@ -769,7 +729,7 @@ body {
 }
 
 .next-station-name {
-    font-size: 1.6rem;
+    font-size: 1.45rem;
     font-weight: 800;
     color: var(--text-primary);
     line-height: 1.25;
@@ -777,10 +737,71 @@ body {
 }
 
 .next-station-eta {
-    font-size: 1.15rem;
+    font-size: 1.05rem;
     font-weight: 700;
     color: var(--text-secondary);
+}
+
+/* ==========================================================================
+   2. SECCIÓN TRAYECTO COMPACTO (ORIGEN Y DESTINO OCUPAN MENOS ESPACIO)
+   ========================================================================== */
+.compact-route-section {
+    width: 100%;
+    background: #f8fafc;
+    border: 2px solid var(--border-subtle);
+    border-radius: var(--radius-md);
+    padding: 0.85rem 1rem;
+    box-sizing: border-box;
+}
+
+.route-box-compact {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.65rem;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.route-col {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-width: 0;
+}
+
+.route-label {
+    font-size: 0.75rem;
+    font-weight: 800;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: 0.15rem;
+}
+
+.route-city-text {
+    font-size: clamp(1.15rem, 3.5vw, 1.45rem);
+    font-weight: 800;
+    color: #0f172a;
+    line-height: 1.2;
+    word-break: break-word;
+}
+
+.route-time-text {
+    font-size: 1.1rem;
+    font-weight: 800;
+    color: var(--renfe-purple);
     margin-top: 0.2rem;
+    font-family: var(--font-mono);
+}
+
+.route-arrow-icon {
+    font-size: 1.5rem;
+    font-weight: 900;
+    color: var(--renfe-purple);
+    flex-shrink: 0;
+    padding: 0 0.4rem;
+    user-select: none;
 }
 
 /* ==========================================================================
