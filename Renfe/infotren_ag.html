@@ -1735,11 +1735,62 @@ body {
     padding: 0.85rem 0.95rem;
 }
 
-.pwa-step-box strong {
-    display: block;
-    font-size: 1.05rem;
+.pwa-step-ios {
+    border-color: #0284c7;
+    background: #f0f9ff;
+}
+
+.pwa-platform-header {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    margin-bottom: 0.45rem;
+}
+
+.pwa-platform-icon {
+    font-size: 1.25rem;
+}
+
+.pwa-platform-header strong {
+    font-size: 1.1rem;
     color: var(--renfe-purple);
-    margin-bottom: 0.25rem;
+    font-weight: 800;
+}
+
+.pwa-ios-explanation {
+    font-size: 0.96rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+    line-height: 1.35;
+    margin-bottom: 0.55rem;
+}
+
+.ios-share-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    vertical-align: middle;
+    background: #e0f2fe;
+    color: #0284c7;
+    padding: 2px 4px;
+    border-radius: 4px;
+    border: 1px solid #bae6fd;
+}
+
+.pwa-ios-list {
+    margin: 0;
+    padding-left: 1.25rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    line-height: 1.35;
+}
+
+.pwa-ios-list li strong {
+    color: var(--renfe-purple);
 }
 
 .pwa-step-box p {
@@ -2066,21 +2117,39 @@ body {
         <div class="pwa-modal-card">
             <div class="pwa-modal-header">
                 <span class="pwa-modal-icon" aria-hidden="true">📲</span>
-                <h2 id="pwaModalTitle">Instalar App InfoTren</h2>
+                <h2 id="pwaModalTitle">Cómo instalar InfoTren</h2>
             </div>
-            <p class="pwa-modal-intro">Puedes añadir <strong>InfoTren</strong> a la pantalla de inicio de tu teléfono para abrirla como una aplicación normal con un solo toque:</p>
+            
             <div class="pwa-modal-steps">
-                <div class="pwa-step-box">
-                    <strong>📱 En Android · Chrome:</strong>
-                    <p>Pulsa el botón de menú <strong>⋮</strong> arriba a la derecha y selecciona <strong>Instalar aplicación</strong> o <strong>Añadir a pantalla de inicio</strong>.</p>
+                <!-- SECCIÓN ESPECÍFICA PARA IPHONE / IPAD -->
+                <div class="pwa-step-box pwa-step-ios" id="pwaStepIos">
+                    <div class="pwa-platform-header">
+                        <span class="pwa-platform-icon">🍎</span>
+                        <strong>En iPhone o iPad (Safari):</strong>
+                    </div>
+                    <p class="pwa-ios-explanation">
+                        En los iPhone, Apple no permite descargas directas: se instala siempre a través del botón oficial de Safari <strong>Compartir <span class="ios-share-badge" aria-hidden="true"><svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2.6" fill="none"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg></span></strong>:
+                    </p>
+                    <ol class="pwa-ios-list">
+                        <li>Asegúrate de estar en <strong>Safari</strong> (si abriste el enlace desde <em>WhatsApp</em>, pulsa la brújula 🧭 abajo a la derecha para abrirlo en Safari).</li>
+                        <li>En la barra inferior de tu iPhone, pulsa el botón <strong>Compartir</strong> (icono de un cuadrado con flecha hacia arriba <span class="ios-share-badge"><svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2.6" fill="none"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg></span>).</li>
+                        <li>En el menú que se despliega, desliza hacia abajo y toca en <strong>"Añadir a pantalla de inicio ➕"</strong>.</li>
+                        <li>Pulsa <strong>"Añadir"</strong> arriba a la derecha. ¡Listo! Ya tendrás la app con su icono en tu móvil.</li>
+                    </ol>
                 </div>
-                <div class="pwa-step-box">
-                    <strong>🍎 En iPhone o iPad · Safari:</strong>
-                    <p>Pulsa el botón <strong>Compartir 📤</strong> en la barra inferior y luego selecciona <strong>Añadir a pantalla de inicio ➕</strong>.</p>
+
+                <!-- SECCIÓN PARA ANDROID -->
+                <div class="pwa-step-box" id="pwaStepAndroid">
+                    <div class="pwa-platform-header">
+                        <span class="pwa-platform-icon">📱</span>
+                        <strong>En teléfonos Android (Chrome):</strong>
+                    </div>
+                    <p>Pulsa el menú de tres puntos <strong>⋮</strong> arriba a la derecha de Chrome y selecciona <strong>"Instalar aplicación"</strong> o <strong>"Añadir a pantalla de inicio"</strong>.</p>
                 </div>
             </div>
+
             <button type="button" class="btn-primary pwa-modal-close" onclick="app.closeInstallModal()">
-                Entendido · Cerrar ventana
+                Entendido · Cerrar
             </button>
         </div>
     </div>
@@ -3503,6 +3572,10 @@ function setupPWA() {
     const btn = document.getElementById("installPwaBtn");
     if (btn && !isRunningStandalone()) {
         btn.style.display = "inline-flex";
+        if (isIOSDevice()) {
+            btn.innerHTML = "📲 Añadir a Inicio";
+            btn.title = "Cómo añadir InfoTren a la pantalla de inicio de tu iPhone";
+        }
     }
 
     // 4. Capturar evento nativo de instalación PWA (Android / Chrome / Edge)
@@ -3529,6 +3602,15 @@ function setupPWA() {
     });
 }
 
+function isIOSDevice() {
+    return /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+}
+
+function isInAppBrowser() {
+    const ua = navigator.userAgent || navigator.vendor || window.opera || '';
+    return /FBAN|FBAV|Instagram|WhatsApp|Twitter|Line|Telegram/i.test(ua);
+}
+
 async function installPWA() {
     if (state.deferredInstallPrompt) {
         state.deferredInstallPrompt.prompt();
@@ -3540,8 +3622,17 @@ async function installPWA() {
         }
         return;
     }
+
+    // Si es un dispositivo iOS o navegador sin prompt directo, abrir modal explicativo
     const modal = document.getElementById("pwaInstallModal");
     if (modal) {
+        const iosBox = document.getElementById("pwaStepIos");
+        const androidBox = document.getElementById("pwaStepAndroid");
+        if (isIOSDevice() && iosBox && androidBox) {
+            // Asegurar que las instrucciones de iOS se vean primero
+            iosBox.parentNode.insertBefore(iosBox, androidBox);
+            iosBox.style.boxShadow = "0 0 0 3px rgba(2, 132, 199, 0.3)";
+        }
         modal.style.display = "flex";
     }
 }

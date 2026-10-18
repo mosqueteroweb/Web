@@ -339,21 +339,39 @@
         <div class="pwa-modal-card">
             <div class="pwa-modal-header">
                 <span class="pwa-modal-icon" aria-hidden="true">📲</span>
-                <h2 id="pwaModalTitle">Instalar App InfoTren</h2>
+                <h2 id="pwaModalTitle">Cómo instalar InfoTren</h2>
             </div>
-            <p class="pwa-modal-intro">Puedes añadir <strong>InfoTren</strong> a la pantalla de inicio de tu teléfono para abrirla como una aplicación normal con un solo toque:</p>
+            
             <div class="pwa-modal-steps">
-                <div class="pwa-step-box">
-                    <strong>📱 En Android · Chrome:</strong>
-                    <p>Pulsa el botón de menú <strong>⋮</strong> arriba a la derecha y selecciona <strong>Instalar aplicación</strong> o <strong>Añadir a pantalla de inicio</strong>.</p>
+                <!-- SECCIÓN ESPECÍFICA PARA IPHONE / IPAD -->
+                <div class="pwa-step-box pwa-step-ios" id="pwaStepIos">
+                    <div class="pwa-platform-header">
+                        <span class="pwa-platform-icon">🍎</span>
+                        <strong>En iPhone o iPad (Safari):</strong>
+                    </div>
+                    <p class="pwa-ios-explanation">
+                        En los iPhone, Apple no permite descargas directas: se instala siempre a través del botón oficial de Safari <strong>Compartir <span class="ios-share-badge" aria-hidden="true"><svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2.6" fill="none"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg></span></strong>:
+                    </p>
+                    <ol class="pwa-ios-list">
+                        <li>Asegúrate de estar en <strong>Safari</strong> (si abriste el enlace desde <em>WhatsApp</em>, pulsa la brújula 🧭 abajo a la derecha para abrirlo en Safari).</li>
+                        <li>En la barra inferior de tu iPhone, pulsa el botón <strong>Compartir</strong> (icono de un cuadrado con flecha hacia arriba <span class="ios-share-badge"><svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2.6" fill="none"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg></span>).</li>
+                        <li>En el menú que se despliega, desliza hacia abajo y toca en <strong>"Añadir a pantalla de inicio ➕"</strong>.</li>
+                        <li>Pulsa <strong>"Añadir"</strong> arriba a la derecha. ¡Listo! Ya tendrás la app con su icono en tu móvil.</li>
+                    </ol>
                 </div>
-                <div class="pwa-step-box">
-                    <strong>🍎 En iPhone o iPad · Safari:</strong>
-                    <p>Pulsa el botón <strong>Compartir 📤</strong> en la barra inferior y luego selecciona <strong>Añadir a pantalla de inicio ➕</strong>.</p>
+
+                <!-- SECCIÓN PARA ANDROID -->
+                <div class="pwa-step-box" id="pwaStepAndroid">
+                    <div class="pwa-platform-header">
+                        <span class="pwa-platform-icon">📱</span>
+                        <strong>En teléfonos Android (Chrome):</strong>
+                    </div>
+                    <p>Pulsa el menú de tres puntos <strong>⋮</strong> arriba a la derecha de Chrome y selecciona <strong>"Instalar aplicación"</strong> o <strong>"Añadir a pantalla de inicio"</strong>.</p>
                 </div>
             </div>
+
             <button type="button" class="btn-primary pwa-modal-close" onclick="app.closeInstallModal()">
-                Entendido · Cerrar ventana
+                Entendido · Cerrar
             </button>
         </div>
     </div>

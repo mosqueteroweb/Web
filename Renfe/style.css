@@ -1706,11 +1706,62 @@ body {
     padding: 0.85rem 0.95rem;
 }
 
-.pwa-step-box strong {
-    display: block;
-    font-size: 1.05rem;
+.pwa-step-ios {
+    border-color: #0284c7;
+    background: #f0f9ff;
+}
+
+.pwa-platform-header {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    margin-bottom: 0.45rem;
+}
+
+.pwa-platform-icon {
+    font-size: 1.25rem;
+}
+
+.pwa-platform-header strong {
+    font-size: 1.1rem;
     color: var(--renfe-purple);
-    margin-bottom: 0.25rem;
+    font-weight: 800;
+}
+
+.pwa-ios-explanation {
+    font-size: 0.96rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+    line-height: 1.35;
+    margin-bottom: 0.55rem;
+}
+
+.ios-share-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    vertical-align: middle;
+    background: #e0f2fe;
+    color: #0284c7;
+    padding: 2px 4px;
+    border-radius: 4px;
+    border: 1px solid #bae6fd;
+}
+
+.pwa-ios-list {
+    margin: 0;
+    padding-left: 1.25rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    line-height: 1.35;
+}
+
+.pwa-ios-list li strong {
+    color: var(--renfe-purple);
 }
 
 .pwa-step-box p {

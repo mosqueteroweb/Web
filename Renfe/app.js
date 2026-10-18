@@ -1397,6 +1397,10 @@ function setupPWA() {
     const btn = document.getElementById("installPwaBtn");
     if (btn && !isRunningStandalone()) {
         btn.style.display = "inline-flex";
+        if (isIOSDevice()) {
+            btn.innerHTML = "📲 Añadir a Inicio";
+            btn.title = "Cómo añadir InfoTren a la pantalla de inicio de tu iPhone";
+        }
     }
 
     // 4. Capturar evento nativo de instalación PWA (Android / Chrome / Edge)
@@ -1423,6 +1427,15 @@ function setupPWA() {
     });
 }
 
+function isIOSDevice() {
+    return /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+}
+
+function isInAppBrowser() {
+    const ua = navigator.userAgent || navigator.vendor || window.opera || '';
+    return /FBAN|FBAV|Instagram|WhatsApp|Twitter|Line|Telegram/i.test(ua);
+}
+
 async function installPWA() {
     if (state.deferredInstallPrompt) {
         state.deferredInstallPrompt.prompt();
@@ -1434,8 +1447,17 @@ async function installPWA() {
         }
         return;
     }
+
+    // Si es un dispositivo iOS o navegador sin prompt directo, abrir modal explicativo
     const modal = document.getElementById("pwaInstallModal");
     if (modal) {
+        const iosBox = document.getElementById("pwaStepIos");
+        const androidBox = document.getElementById("pwaStepAndroid");
+        if (isIOSDevice() && iosBox && androidBox) {
+            // Asegurar que las instrucciones de iOS se vean primero
+            iosBox.parentNode.insertBefore(iosBox, androidBox);
+            iosBox.style.boxShadow = "0 0 0 3px rgba(2, 132, 199, 0.3)";
+        }
         modal.style.display = "flex";
     }
 }
