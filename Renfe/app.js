@@ -1350,68 +1350,125 @@ function forceRefresh() {
     });
 }
 
+const PWA_ICON_192 = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAMAAAADACAYAAABS3GwHAAADWElEQVR42u3dsVErQRRE0TGJgFRkEgY2gShcxQGFgU1J2tXO7D2vqgP4PX1kgH4xxiL3+f71LetkOOMWSIxeYDB6SWPwqJKE4BElCcGjSRKCR5IsBA8jWQQeRJIIPIJkIShesggULlkEipYsAgVLFoFiJY1AqZIFoFDJIlCkZBEoUNIIlCdZAIqTNAKlSRaAwiSNQFmSBaAoSSNQkmQBKEjSCJQjAIgUAShG0giUIgCIFAEoRNIIlCEALBg3zwEAAAAAAAAAAAAAAAAAAAAAAAAAAADAxABW/jmuA+BpBAA4AABwAADgAADAAQCAA+BkAC5vH3JnAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAHD+SiQADgAAHAAAOAAAcAAA4AAAwAEAgAMAAAcAAA6AhQHcxlUmCQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA4LtAvgsEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADwM46i+o7H1H/7sAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA8G1Q3wYFAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAcAAA4AABwAADgAGgB2AuITjqdABAav15CAHzS6QYAD6yf/wD8nscFoNjR+DuP2xq/nhYBcBtXOUkAAAAAAAAAAAAAAAAAAAAAAAAAAAAA4GAAsyIwHABeMv6VfxnmN5q6BMD49fksgBUR+PTX6WbjrwAwcr2eAoBPf91uDmAlBMav383HvwoAn/463g3ACgiMX8+7jX92AD79db07gDP+LzFpZ9x7SpM0AAgkPX4AJA8AAkmPHwLJjx8CyY8fAMkDgEDS44dA8uOHQPLjh0Dy44dA8uMHQfLDh0CMHwIxfhDE8EEQwwdBDB8EMXwYxOhhEKOHxLhnvR/XlkXLCsDzxQAAAABJRU5ErkJggg==";
+const PWA_ICON_512 = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAgAAAAIACAYAAAD0eNT6AAAOM0lEQVR42u3Wu23DQBRFQYaswK0oVBmOXYjKZR0SnDoxDUMS+c5cYBrgZ/csi516nx9fd4B3cAKbucgBhIOZSx5AHJgLHwBBYC58AASBufABEATm0gdADJiLHwAhYC59AMSAufgBEALm0gdADJiLHwAhYC5+AISAix8AhICLHwCEgMsfABFgLn4AhIC5+AEQAubyB0AEmIsfACFgLn8ARIC5+AEQAubyB0AEmMsfABFgLn4AhIDL34cFgAhw+QOACHD5A4AIcPEDgBBw+QOACHD5A4AIcPkDgAhw+QOACHD5A4AIcPkDgAhw+QOACHD5A4AIcPkDgAhw+QNANgK8ZACIBYAXDACxCPBiASAWAV4oAMQiwIsEgGAEeIkAEAsALxAAYhHgxQFALAK8MAAIRoCXBQCxAPCiACAWAV4QAAQjwMsBgFgAeDEAEIsALwQAghHgZQBALAC8CAAIRoCXAACxAPACACAWAR48AAQjwEMHgFgAeOAAEIwADxsAYgHgQQNAMAI8ZACIBYAHDADBCPBwASAWAB4sAAQjwEMFAAEAAEwPAA8UAIIR4GECQCwAPEgACEaAhwgAAgAAmB4AHiAABCPAwwOAWAB4cAAQjAAPDQAEAAAwPQA8MAAIRoCHBQACAAAQAADAuADwoAAgGAEeEgAIAABAAAAA4wLAAwKAYAR4OAAgAAAAAQAAjAsADwYAghHgoQCAAGAgM7M9c14KAASAmQkABAACwMwEAAIAAWBmAgABgAAwMwHAyQLAAxEAZmYCIBgBHoYAMDMTAAIAAWBmAgABgAAwMwGAAEAAmJkAQAAgAMxMACAAEABmJgAQAAgAMxMACAAEgJkJAAQAAsDMBAACAAFgZgIAAYAAMDMBgABAAJiZAEAAIADMTADwjwDwIASAmZkACEaAhyAAzMwEgABAAJiZAEAAIADMTAAgABAAZiYAEAAIADMTAAgABICZCQAEAALAzAQAAgABYGYCAAGAADAzAYAAQACYmQBAACAAzEwAIAAQAGYmABAACAAzEwAIAASAmQkABAACwMwEAAKAQwTAZb0CfyAAEAAIABAAAgABgAAAASAAEAAIABAAAgABgAAAASAAEAAIABAAAgABIAAEAAgAAYAAEAACAASAABAACAABAAJAAAgABIAAAAGAAEAACAAQAAgABIAAAAGAAEAACAAQAAgABIAAAAGAAEAACAAQAAgABAAgABAACABAACAAEACAAEAAIABAAAgABAACAASAAEAAIABAAAgABAACAASAAEAAIABAAAgABAACAASAAEAACAABAAJAAAgABIAAAAEgAAQAAkAAgABAACAABAAIAAQAAkAAgABAACAABAAIAAQAAkAAgABAACAABAAIAAQAAgAQAAgABAAgABAACABAACAAEAAgAAQAAgABAAJAACAAEAAgAAQAAgABAAJAACAAEAAgAAQAAgABAAJAACAABIAAAAEgAASAhyAABAAIAAEgABAAAgAEAAIAASAAQAAgABAAAgAEAAIAASAAQAAgABAAAgAEAAIAASAAQAAgABAAgABAACAAAAGAAEAAAAIAAYAAAAEgABAACAAQAAIAAYAAAAEgABAACAAQAAIAAYAAAAEgABAACAAQAAIAASAABAAIAAGAABAAAgAEgAAQAAgAAQACwHkpABAAAgAEAAIAASAAQAAgABAAAgAEAAIAASAAQAAgABAAAgAEAAIAAQAIAAQAAgAQAAgABAAgABAACAAQAAIAAYAAAAEgABAACAAQAAIAAYAAAAEgABAACAAQAAIAAYAAAAEgABAAAkAAgAAQAAgAASAAQAAIAAGAABAAIACclwIAASAAQAAgABAAAgAEAAIAASAAQAAgABAAAgAEAAIAASAAQAAgABAADnQQAAgABAAgABAACABAACAAEACAAEAAIABAAAgABAACAASAAEAAIABAAAgABAACAASAAEAAIABAAAgABIAAEAAgAAQAAkAACAAQAAJAACAABAAIAAEgABAAAgAEAAIAASAAQAAgABAAAgAEAAIAAWBmc+a8FAAIADMTAAgABICZCQAEAALAzAQAAgABYGYCAAGAADAzAYAAQACYmQBAACAAzEwAIAAQAGYmABAACAAzEwAIAASAmQkABAACwMwEAAIAAWBmAgABgAAwMwGAAEAAmJkAQAAIADMzAYAAEABmZgJAACAAzMwEgABAAJiZAEAAIADMTAAgABAAZiYAEAAIADMTAAgABICZCQAEAALAzAQAAgABYGYCAAHAy2zLDeBXzksBgAAABAACAAEACAAEAAIAEAAIAAQAIAAQAAgAQAAgABAAgABAACAAAAGAAEAAAAIAAYAAAAQAAgABAAgABAACABAACAAEACAAEAAIAEAAIAAQAIAAQAAIAAABgAAQAAACQAAgAAAEgABAAAACAAGAAAAEAAIAAQAIAAQAAgAQAAgABAAgABAACABAACAAEACAAEAAIAAAAYAAQAAAAgABgAAABAACAAEACAAEAAIAEAAIAAQAIAAQAPxgZrZnzksBgAAwMwGAAEAAmJkAQAAgAMxMACAAEABmJgAQAAgAMxMACAAEgJkJAAQAAsDMBAACAAFgZgIAAYAAMDMBgABAAJiZAEAAIADMTAAgABAAZiYAEAAIADMTAAgABICZCQAEgAAwMxMACAABYGYmAAQAAsDMTAAIAASAmQkABAACwMwEAAIAAWBmAgABgAAwMwGAAEAAmJkAQAAgAMxMACAAEABmJgAQAAgAMxMACAAEgJkJAAQAAsDMBAACAAFgZgIAAYAAMDMBgABAAJiZAEAAcPAAuKzXMcz3M+n7cV4KAASAA1wACAABgABAADjABYDvRwAgABAADnAB4PsRAAgABIAD3Hw/AgABgABwgJvvRwAgABAADnDz/QgABAACwAFuvh8BgABAADjAzfcjABAACAAHuPl+BAACAAHgADffjwBAACAAHODm+xEACAAEgANcAPh+BAACAAHgABcAvh8BgABAAAgAAeD7EQAIAAHgABcAAsD3IwAQAALAAS4ABIDvRwAIAASAA1wACADfjwAQAAgAB7gAEAACAAGAAHCACwDfjwBAACAAHOACwPcjABAACAAHuPl+BAACAAHgADffjwBAACAAHODm+xEACAAEgAPcfD8CAAGAAHCAm+9HACAAEAAOcPP9CAAEAALAAW6+HwGAAEAAOMDN9yMAEAAIAAe4APD9CAAEAALAAS4AfD8CAAGAABAAAsD3IwAQADjABYAA8P0IAASAAHCACwAB4PsRAAIAAeAAFwACwPcjAAQAAsABLgAEgABAACAAzKwz56UAQACYmQBAACAAzEwAIAAQAGYmABAACAAzEwAIAASAmQkABAACwMwEAAIAAWBmAgABgAAwMwGAAEAAmJkAQAAgAMxMACAAEABmJgAQAAgAMxMACAAEgJkJAAQAAsDMBAACQACYmQkABIAAMDMTAAIAAWBmJgAEAALAzAQAAgABYGYCAAGAADAzAYAAQACYmQBAACAAzEwAIAAQAGYmABAACAAzEwAIAASAmQkABAACwMwEAAIAAWBmAgABgAAwMwGAAEAAmJkAQAAgAMxMACAAEABmJgAQAJiZCQAEgAAwMxMAAgABYGYmAAQAAsDMBAACAAFgZgIAAYAAMDMBgABAAJiZAEAAIADMTAAgABAAZiYAEACICwcYvnHfOAIAB6ODEd+6bx0BgEPRoYhv3beOAMCB6EDEN++bRwDgMHQY4pv3zSMAcBA6CPHt+/YRADgEvRN8+yAAcACCfwAEAA4/8A+AAMDBB/4F4gHwPQ8Chx74F4hd/gIABx74JxAA4LAD/wQCABx04N9AAOCQc8iBfwMBwHNtyw3g9JznAgABAAgABAACABAACAAEACAAEAAIAEAAIAAEAIAAQAAIAAABgAAQAAACAAEgAAAEADsCQAQIAAABELz8BYAAABAAAgABACAABAACAEAACAAEAIAAEAAIAAABIAAQAAAC4EwBIAIEAIAACF7+AkAAAAgAAYAAABAAAgABACAAxgaACOg52rwT/HP+Od5w+QsAh5HDCPxzCAAcRA4i8O8hAHAIOYTAv8fYABABDiAHEPgHCV7+AsDh4/AB/yACAAePgwf8iwgAHDoOHfAvMjYARIADx4ED/kmCl78AcNg4bMA/iQDAQeOgAf8mlQAQAQ4Zhwz4Nwle/gLAAeOAAf8o0QAQAQ4Xhwv4Rwle/gLAweJgAf8qAgCHikMF/KtUAkAEOFAcKOCfJXj5CwCHicME/LNEA0AEOEgcJODfJXj5CwCHiEME/LsIABwgDhDwD1MJABHg8HB4gH+Y4OUvABwcDg7wLxMNABHg0HBogH+Z4OUvABwYDgzwTxMNABHgsHBYgH+a4OUvAAAgGgAiAACCl78AAIBoAIgAAAhe/iIAAKKXvwAAgGgAiAAACF7+AgAAogEgAgAgePmLAACIXv4CAACiASACACB4+YsAAIhe/gIAAKIBIAIAIHj5iwAAiF7+IgAAope/AACAaACIAAAIXv4iAACil78IAIDo5S8CACB6+QsAAIgGgAgAgODlLwIAIHr5iwAAiF7+IgAAl398PgQAXP4iAABc/iIAAFz+IgAAXP4iAABc/iIAAFz+QgAAXPwiAABc/iIAAFz+IgAAXP5CAABc/CIAAFz+IgAA3MRCAAAXv4kAAFz+JgQAcPGbCADA5W9CAAAXvwkBAFz8JgIAcPmbEADAxW9CAAAXvwkBAFz8JgQAcPGbGABw6ZsJAQAXv5kYAHDpmwkBABe/mRgAcOmbCQIAF76ZIABw4ZsJAgAXvpk4AHDJmwkHwEVuB9gDqp9AkCNO7E8AAAAASUVORK5CYII=";
+
+function isRunningStandalone() {
+    return (window.matchMedia && window.matchMedia("(display-mode: standalone)").matches) || window.navigator.standalone === true;
+}
+
 function setupPWA() {
-    // 1. Generar Web App Manifest dinámico para que funcione en cualquier ruta (index.html o infotren_ag.html)
+    // 1. Generar Web App Manifest completo con iconos PNG 192x192 y 512x512 (any + maskable)
     try {
-        const iconSvg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><rect width="512" height="512" rx="110" fill="#571661"/><text x="256" y="345" font-size="290" text-anchor="middle">🚆</text></svg>`;
-        const iconUrl = 'data:image/svg+xml;utf8,' + encodeURIComponent(iconSvg);
+        const cleanUrl = window.location.href.split("?")[0].split("#")[0];
+        const scopeUrl = cleanUrl.substring(0, cleanUrl.lastIndexOf("/") + 1);
         const manifest = {
-            name: 'InfoTren - Seguimiento de Trenes Renfe',
-            short_name: 'InfoTren',
-            description: 'Consulta accesible en tiempo real del retraso, próxima parada y recorrido de trenes Renfe.',
-            start_url: window.location.href.split('?')[0],
-            scope: window.location.href.substring(0, window.location.href.lastIndexOf('/') + 1),
-            display: 'standalone',
-            orientation: 'portrait',
-            background_color: '#f1f5f9',
-            theme_color: '#571661',
-            lang: 'es-ES',
+            id: "infotren-pwa",
+            name: "InfoTren - Seguimiento de Trenes Renfe",
+            short_name: "InfoTren",
+            description: "Aplicación accesible en tiempo real para consultar el retraso, próxima parada y recorrido de trenes Renfe.",
+            start_url: cleanUrl,
+            scope: scopeUrl,
+            display: "standalone",
+            orientation: "portrait",
+            background_color: "#f1f5f9",
+            theme_color: "#571661",
+            lang: "es-ES",
+            dir: "ltr",
+            categories: ["travel", "navigation", "utilities"],
             icons: [
                 {
-                    src: iconUrl,
-                    sizes: '192x192 512x512',
-                    type: 'image/svg+xml',
-                    purpose: 'any maskable'
+                    src: PWA_ICON_192,
+                    sizes: "192x192",
+                    type: "image/png",
+                    purpose: "any"
+                },
+                {
+                    src: PWA_ICON_192,
+                    sizes: "192x192",
+                    type: "image/png",
+                    purpose: "maskable"
+                },
+                {
+                    src: PWA_ICON_512,
+                    sizes: "512x512",
+                    type: "image/png",
+                    purpose: "any"
+                },
+                {
+                    src: PWA_ICON_512,
+                    sizes: "512x512",
+                    type: "image/png",
+                    purpose: "maskable"
                 }
             ]
         };
         const manifestStr = JSON.stringify(manifest);
-        let link = document.querySelector('link[rel="manifest"]');
+        let link = document.querySelector("link[rel=\"manifest\"]");
         if (!link) {
-            link = document.createElement('link');
-            link.rel = 'manifest';
+            link = document.createElement("link");
+            link.rel = "manifest";
             document.head.appendChild(link);
         }
-        link.href = 'data:application/manifest+json;charset=utf-8,' + encodeURIComponent(manifestStr);
+        link.href = "data:application/manifest+json;charset=utf-8," + encodeURIComponent(manifestStr);
     } catch (e) {}
 
-    // 2. Registrar Service Worker si está disponible en la carpeta
-    if ('serviceWorker' in navigator && (window.location.protocol === 'https:' || window.location.hostname === 'localhost')) {
-        navigator.serviceWorker.register('./sw.js').catch(() => {});
+    // 2. Registrar Service Worker para soporte offline completo
+    if ("serviceWorker" in navigator && (window.location.protocol === "https:" || window.location.hostname === "localhost")) {
+        navigator.serviceWorker.register("./sw.js").catch(() => {});
     }
 
-    // 3. Capturar evento de instalación PWA
-    window.addEventListener('beforeinstallprompt', (e) => {
+    // 3. Mostrar botón Instalar si no está ya instalada como app independiente
+    const btn = document.getElementById("installPwaBtn");
+    if (btn && !isRunningStandalone()) {
+        btn.style.display = "inline-flex";
+    }
+
+    // 4. Capturar evento nativo de instalación PWA (Android / Chrome / Edge)
+    window.addEventListener("beforeinstallprompt", (e) => {
         e.preventDefault();
         state.deferredInstallPrompt = e;
-        const btn = document.getElementById('installPwaBtn');
-        if (btn) btn.style.display = 'inline-flex';
+        if (btn && !isRunningStandalone()) {
+            btn.style.display = "inline-flex";
+        }
     });
 
-    window.addEventListener('appinstalled', () => {
+    window.addEventListener("appinstalled", () => {
         state.deferredInstallPrompt = null;
-        const btn = document.getElementById('installPwaBtn');
-        if (btn) btn.style.display = 'none';
+        if (btn) btn.style.display = "none";
+        closeInstallModal();
+    });
+
+    // 5. Escuchar cambios de conexión en vivo
+    window.addEventListener("online", () => {
+        refreshData(true);
+    });
+    window.addEventListener("offline", () => {
+        updateStatusIndicator("offline", "Sin conexión");
     });
 }
 
 async function installPWA() {
     if (state.deferredInstallPrompt) {
         state.deferredInstallPrompt.prompt();
-        await state.deferredInstallPrompt.userChoice;
-        state.deferredInstallPrompt = null;
-        const btn = document.getElementById('installPwaBtn');
-        if (btn) btn.style.display = 'none';
+        const choice = await state.deferredInstallPrompt.userChoice;
+        if (choice && choice.outcome === "accepted") {
+            state.deferredInstallPrompt = null;
+            const btn = document.getElementById("installPwaBtn");
+            if (btn) btn.style.display = "none";
+        }
+        return;
+    }
+    const modal = document.getElementById("pwaInstallModal");
+    if (modal) {
+        modal.style.display = "flex";
+    }
+}
+
+function closeInstallModal() {
+    const modal = document.getElementById("pwaInstallModal");
+    if (modal) {
+        modal.style.display = "none";
     }
 }
 
@@ -1463,7 +1520,8 @@ window.app = {
     filterFleetTable,
     forceRefresh,
     cycleFontScale,
-    installPWA
+    installPWA,
+    closeInstallModal
 };
 
 document.addEventListener('DOMContentLoaded', init);

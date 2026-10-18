@@ -1639,3 +1639,87 @@ body {
 .footer-sub a:hover {
     text-decoration: underline;
 }
+
+
+/* ==========================================================================
+   MODAL DE INSTALACIÓN PWA (SENIOR +80 AÑOS)
+   ========================================================================== */
+.pwa-modal-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(15, 23, 42, 0.72);
+    z-index: 2000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+    box-sizing: border-box;
+}
+
+.pwa-modal-card {
+    background: #ffffff;
+    border: 3px solid var(--renfe-purple);
+    border-radius: var(--radius-lg);
+    max-width: 500px;
+    width: 100%;
+    padding: 1.35rem 1.15rem;
+    box-shadow: var(--shadow-lg);
+    box-sizing: border-box;
+}
+
+.pwa-modal-header {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    margin-bottom: 0.75rem;
+}
+
+.pwa-modal-icon {
+    font-size: 2rem;
+}
+
+.pwa-modal-header h2 {
+    font-size: 1.4rem;
+    font-weight: 800;
+    color: var(--renfe-purple);
+}
+
+.pwa-modal-intro {
+    font-size: 1.05rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 1rem;
+    line-height: 1.4;
+}
+
+.pwa-modal-steps {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    margin-bottom: 1.2rem;
+}
+
+.pwa-step-box {
+    background: #f8fafc;
+    border: 2px solid var(--border-color);
+    border-radius: var(--radius-md);
+    padding: 0.85rem 0.95rem;
+}
+
+.pwa-step-box strong {
+    display: block;
+    font-size: 1.05rem;
+    color: var(--renfe-purple);
+    margin-bottom: 0.25rem;
+}
+
+.pwa-step-box p {
+    font-size: 0.98rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+    line-height: 1.35;
+}
+
+.pwa-modal-close {
+    width: 100% !important;
+}

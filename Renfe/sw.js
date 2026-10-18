@@ -1,4 +1,4 @@
-const CACHE_NAME = 'infotren-pwa-v2';
+const CACHE_NAME = 'infotren-pwa-v3';
 const ASSETS = [
     './',
     './index.html',
@@ -7,7 +7,9 @@ const ASSETS = [
     './app.js',
     './data/stations.json',
     './data/flotaLD.json',
-    './data/trenesConEstacionesLD.json'
+    './data/trenesConEstacionesLD.json',
+    'https://unpkg.com/leaflet@1.9.4/dist/leaflet.css',
+    'https://unpkg.com/leaflet@1.9.4/dist/leaflet.js'
 ];
 
 self.addEventListener('install', (event) => {
@@ -31,7 +33,11 @@ self.addEventListener('fetch', (event) => {
     event.respondWith(
         fetch(event.request)
             .then((response) => {
-                if (response && response.status === 200 && event.request.url.startsWith(self.location.origin)) {
+                if (
+                    response &&
+                    response.status === 200 &&
+                    (event.request.url.startsWith(self.location.origin) || event.request.url.includes('unpkg.com/leaflet'))
+                ) {
                     const copy = response.clone();
                     caches.open(CACHE_NAME).then((cache) => cache.put(event.request, copy)).catch(() => {});
                 }

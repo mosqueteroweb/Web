@@ -14,7 +14,7 @@
     <meta name="referrer" content="strict-origin-when-cross-origin">
     <meta http-equiv="X-Content-Type-Options" content="nosniff">
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220%200%20100%20100%22><rect width=%22100%22 height=%22100%22 rx=%2222%22 fill=%22%23571661%22/><text x=%2250%22 y=%2268%22 font-size=%2260%22 text-anchor=%22middle%22>🚆</text></svg>">
-    <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220%200%20180%20180%22><rect width=%22180%22 height=%22180%22 rx=%2240%22 fill=%22%23571661%22/><text x=%2290%22 y=%22122%22 font-size=%22105%22 text-anchor=%22middle%22>🚆</text></svg>">
+    <link rel="apple-touch-icon" sizes="180x180" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAALQAAAC0CAYAAAA9zQYyAAAC/UlEQVR42u3dvVHrUBhF0RtSAa0QUgaxC6Fc6oAhIPWPGMn3bq1vZhfA0RoFHr/nMSa+j9fLt+ZrOGCBB1iAQyy4QRbYICsP2wNSArWHogxsD0IZ1B6AEqiNrgxsQyuD2sDKoDasUqiNqgxogyqD2pDKoDagUqiNpwxowymD2mBKoTaWMqANpRRqIykD2kBKoTaOgJZmBG0YpVAbRUBLQEs7gzaIUqiNIaCflDv+gAYaaKCBBhpoBzTQDmiggV4D9GofzTigr6IG2gENNNBAAw000EADDbQDOgf67eVdNwIaaKCBBhpooIEGGmiggQYaaKCBBhpooIEGGmiggQYaaKCBBhpooIEGGmiggQYaaGCBBhpooIEGGmiggQYaaKCBFtBAAw000EADDTTQQAMNNNACGmiggQYaaKCBBhpooIEGWkADDTTQQAMNNNBAAw000EALaL+x4jdWgAYaaKCBBhpoBzTQDmiggQYaaKCBBhpooB3Qa4H+Gp86OKCBBhpooIEGWkADLaCBBhpooIEGGmiggRbQQAtooIEG2nc5fJcDaKCBBtoBDbQDGmiggQYaaKCBBhpoBzTQDmiggQb6YNBH/9eze96z/haggQYaaKCBBhpooIEGGmiggQYaaKCBBhpooIEGGmiggQYaaKCBBhpooIEG2vm2HdAOaKCBBhpooIEGGmigHdBAO6CBBhpooIEGGmiggXZAA+2ABhpooIEGGugdwNf+/rNvMM78IIHu7TC8mS5QA+2tZI9JQf+eNxLUhU3G33kbAV3YZUrQflvbb4EDLaCBFtBAC2iggQZaQG8HPRNqQID+N+bVPov2ubPdTg0a5v52y4L2drbfXaBXQQ2zDe/CvAJob2c7nho0vOfYclw7bxWgV9pz3DpvFKhToGdE7e1s182YK/+CRf3GI2cwZTBDrRxmoJUDDbVSmKFWDjPUymEGWjnQUCuFGWrlMEOtHGawlYMMtZKYoVYOM9jKQYZaScxgKwcZbCUhw60kYsABdsADu/F+ADlLNoK3iKCqAAAAAElFTkSuQmCC"><rect width=%22180%22 height=%22180%22 rx=%2240%22 fill=%22%23571661%22/><text x=%2290%22 y=%22122%22 font-size=%22105%22 text-anchor=%22middle%22>🚆</text></svg>">
     
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -328,6 +328,31 @@
             </div>
         </section>
     </main>
+
+    
+    <!-- Modal de ayuda para instalar la App PWA en iPhone / Android -->
+    <div id="pwaInstallModal" class="pwa-modal-backdrop" style="display: none;" role="dialog" aria-modal="true" aria-labelledby="pwaModalTitle">
+        <div class="pwa-modal-card">
+            <div class="pwa-modal-header">
+                <span class="pwa-modal-icon" aria-hidden="true">📲</span>
+                <h2 id="pwaModalTitle">Instalar App InfoTren</h2>
+            </div>
+            <p class="pwa-modal-intro">Puedes añadir <strong>InfoTren</strong> a la pantalla de inicio de tu teléfono para abrirla como una aplicación normal con un solo toque:</p>
+            <div class="pwa-modal-steps">
+                <div class="pwa-step-box">
+                    <strong>📱 En Android · Chrome:</strong>
+                    <p>Pulsa el botón de menú <strong>⋮</strong> arriba a la derecha y selecciona <strong>Instalar aplicación</strong> o <strong>Añadir a pantalla de inicio</strong>.</p>
+                </div>
+                <div class="pwa-step-box">
+                    <strong>🍎 En iPhone o iPad · Safari:</strong>
+                    <p>Pulsa el botón <strong>Compartir 📤</strong> en la barra inferior y luego selecciona <strong>Añadir a pantalla de inicio ➕</strong>.</p>
+                </div>
+            </div>
+            <button type="button" class="btn-primary pwa-modal-close" onclick="app.closeInstallModal()">
+                Entendido · Cerrar ventana
+            </button>
+        </div>
+    </div>
 
     <footer class="app-footer">
         <div class="footer-container">
