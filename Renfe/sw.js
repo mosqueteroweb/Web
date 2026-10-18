@@ -1,8 +1,12 @@
-const CACHE_NAME = 'infotren-pwa-v3';
+const CACHE_NAME = 'infotren-pwa-v4';
 const ASSETS = [
     './',
     './index.html',
     './infotren_ag.html',
+    './manifest.json',
+    './icon-192.png',
+    './icon-512.png',
+    './apple-touch-icon.png',
     './style.css',
     './app.js',
     './data/stations.json',

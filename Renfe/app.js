@@ -1358,59 +1358,34 @@ function isRunningStandalone() {
 }
 
 function setupPWA() {
-    // 1. Generar Web App Manifest completo con iconos PNG 192x192 y 512x512 (any + maskable)
+    // 1. Si se abre como archivo local suelto (file://), inyectar manifest embebido en Base64; en servidor/GitHub Pages usa ./manifest.json
     try {
-        const cleanUrl = window.location.href.split("?")[0].split("#")[0];
-        const scopeUrl = cleanUrl.substring(0, cleanUrl.lastIndexOf("/") + 1);
-        const manifest = {
-            id: "infotren-pwa",
-            name: "InfoTren - Seguimiento de Trenes Renfe",
-            short_name: "InfoTren",
-            description: "Aplicación accesible en tiempo real para consultar el retraso, próxima parada y recorrido de trenes Renfe.",
-            start_url: cleanUrl,
-            scope: scopeUrl,
-            display: "standalone",
-            orientation: "portrait",
-            background_color: "#f1f5f9",
-            theme_color: "#571661",
-            lang: "es-ES",
-            dir: "ltr",
-            categories: ["travel", "navigation", "utilities"],
-            icons: [
-                {
-                    src: PWA_ICON_192,
-                    sizes: "192x192",
-                    type: "image/png",
-                    purpose: "any"
-                },
-                {
-                    src: PWA_ICON_192,
-                    sizes: "192x192",
-                    type: "image/png",
-                    purpose: "maskable"
-                },
-                {
-                    src: PWA_ICON_512,
-                    sizes: "512x512",
-                    type: "image/png",
-                    purpose: "any"
-                },
-                {
-                    src: PWA_ICON_512,
-                    sizes: "512x512",
-                    type: "image/png",
-                    purpose: "maskable"
-                }
-            ]
-        };
-        const manifestStr = JSON.stringify(manifest);
         let link = document.querySelector("link[rel=\"manifest\"]");
         if (!link) {
             link = document.createElement("link");
             link.rel = "manifest";
+            link.href = "./manifest.json";
             document.head.appendChild(link);
         }
-        link.href = "data:application/manifest+json;charset=utf-8," + encodeURIComponent(manifestStr);
+        if (window.location.protocol === "file:") {
+            const manifest = {
+                id: "infotren-pwa",
+                name: "InfoTren - Seguimiento de Trenes Renfe",
+                short_name: "InfoTren",
+                description: "Aplicación accesible en tiempo real para consultar el retraso, próxima parada y recorrido de trenes Renfe.",
+                start_url: window.location.href,
+                display: "standalone",
+                orientation: "portrait",
+                background_color: "#f1f5f9",
+                theme_color: "#571661",
+                lang: "es-ES",
+                icons: [
+                    { src: PWA_ICON_192, sizes: "192x192", type: "image/png", purpose: "any maskable" },
+                    { src: PWA_ICON_512, sizes: "512x512", type: "image/png", purpose: "any maskable" }
+                ]
+            };
+            link.href = "data:application/manifest+json;charset=utf-8," + encodeURIComponent(JSON.stringify(manifest));
+        }
     } catch (e) {}
 
     // 2. Registrar Service Worker para soporte offline completo
