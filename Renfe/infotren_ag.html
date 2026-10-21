@@ -1316,101 +1316,6 @@ body {
     box-sizing: border-box;
 }
 
-/* ==========================================================================
-   TARJETA DE AUTORÍA OFICIAL MOSQUETEROWEB EN PANTALLA PRINCIPAL
-   ========================================================================== */
-.home-author-card {
-    background: #ffffff;
-    border: 2px solid var(--border-color);
-    border-radius: var(--radius-lg);
-    box-shadow: var(--shadow-sm);
-    padding: 1.25rem 1.5rem;
-    margin-top: 1.5rem;
-    display: flex;
-    align-items: center;
-    gap: 1.25rem;
-    transition: box-shadow 0.2s ease;
-}
-
-.home-author-card:hover {
-    box-shadow: var(--shadow-md);
-}
-
-.home-author-avatar {
-    width: 56px;
-    height: 56px;
-    border-radius: 50%;
-    border: 2px solid var(--renfe-purple-light);
-    object-fit: cover;
-    background: #ffffff;
-    flex-shrink: 0;
-}
-
-.home-author-info {
-    flex: 1;
-    min-width: 0;
-}
-
-.home-author-title {
-    margin: 0 0 0.25rem 0;
-    font-size: 1.05rem;
-    font-weight: 700;
-    color: var(--text-primary);
-}
-
-.home-author-title a {
-    color: var(--renfe-purple);
-    text-decoration: none;
-    font-weight: 800;
-}
-
-.home-author-title a:hover {
-    text-decoration: underline;
-}
-
-.home-author-desc {
-    margin: 0 0 0.35rem 0;
-    font-size: 0.88rem;
-    color: var(--text-secondary);
-    font-weight: 600;
-}
-
-.home-author-desc a {
-    color: var(--renfe-purple);
-    text-decoration: underline;
-}
-
-.home-author-links {
-    margin: 0;
-    font-size: 0.82rem;
-    color: var(--text-muted);
-    font-weight: 600;
-    display: flex;
-    gap: 0.75rem;
-    flex-wrap: wrap;
-}
-
-.home-author-links a {
-    color: var(--renfe-purple-light);
-    text-decoration: none;
-}
-
-.home-author-links a:hover {
-    text-decoration: underline;
-}
-
-@media (max-width: 600px) {
-    .home-author-card {
-        flex-direction: column;
-        text-align: center;
-        padding: 1.15rem 1rem;
-        gap: 0.75rem;
-    }
-    .home-author-links {
-        justify-content: center;
-    }
-}
-
 .empty-icon {
     font-size: 3.2rem;
     margin-bottom: 0.65rem;
@@ -2235,30 +2140,6 @@ body {
                         <li>Se muestran trenes AVE, Avlo, Alvia, Euromed, Intercity y Media Distancia que están circulando hoy.</li>
                         <li>Si el tren aún no ha salido o ya terminó su viaje hace horas, no aparecerá activo todavía.</li>
                     </ul>
-                </div>
-            </div>
-
-            <!-- Bloque de autoría oficial Mosqueteroweb en pantalla principal -->
-            <div class="home-author-card">
-                <img 
-                    src="./logo_mosqueteroweb.png" 
-                    alt="Logo oficial de Pedro Mosqueteroweb" 
-                    class="home-author-avatar" 
-                    width="56" 
-                    height="56"
-                />
-                <div class="home-author-info">
-                    <p class="home-author-title">
-                        InfoTren · Desarrollado por <a href="https://github.com/mosqueteroweb" target="_blank" rel="noopener"><strong>Pedro Mosqueteroweb</strong></a>
-                    </p>
-                    <p class="home-author-desc">
-                        Seguimiento accesible en tiempo real de trenes Renfe · Código Abierto (<a href="https://www.gnu.org/licenses/gpl-3.0.html" target="_blank" rel="noopener">GPL-3.0</a>)
-                    </p>
-                    <p class="home-author-links">
-                        <a href="https://github.com/mosqueteroweb" target="_blank" rel="noopener">GitHub: @mosqueteroweb</a>
-                        <span>·</span>
-                        <a href="mailto:mosqueteroweb@gmail.com">mosqueteroweb@gmail.com</a>
-                    </p>
                 </div>
             </div>
         </section>

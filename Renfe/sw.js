@@ -1,4 +1,4 @@
-const CACHE_NAME = 'infotren-pwa-v6';
+const CACHE_NAME = 'infotren-pwa-v7';
 const ASSETS = [
     './',
     './index.html',
