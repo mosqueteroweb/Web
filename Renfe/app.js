@@ -7,8 +7,12 @@
 // CONFIGURACIÓN Y MAPEOS
 // ============================================================================
 
+const customProxy = (typeof localStorage !== 'undefined' && localStorage.getItem('infotren_custom_proxy')) || 
+    (typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('proxy'));
+
 const CONFIG = {
     CORS_PROXIES: [
+        ...(customProxy ? [customProxy] : []),
         'https://cors-anywhere.fly.dev/',
         'https://api.allorigins.win/raw?url=',
         'https://api.codetabs.com/v1/proxy?quest=',

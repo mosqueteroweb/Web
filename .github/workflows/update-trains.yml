@@ -2,7 +2,7 @@ name: Actualizar Datos de Renfe
 
 on:
   schedule:
-    - cron: '0 */6 * * *' # Cada 6 horas
+    - cron: '0 */2 * * *' # Cada 2 horas para mantener la telemetría local de respaldo actualizada
   workflow_dispatch: # Permite ejecutar manualmente desde GitHub Actions
 
 permissions:

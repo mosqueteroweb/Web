@@ -1,8 +1,8 @@
-const CACHE_NAME = 'infotren-pwa-v5';
+const CACHE_NAME = 'infotren-pwa-v6';
 const ASSETS = [
     './',
     './index.html',
-    './infotren_ag.html',
+    './logo_mosqueteroweb.png',
     './manifest.json',
     './icon-192.png',
     './icon-512.png',
