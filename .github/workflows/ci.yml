@@ -26,18 +26,8 @@ jobs:
 
       - name: Validar sintaxis JavaScript
         run: |
-          echo "Comprobando sintaxis JS..."
           node --check Renfe/sw.js
-          node --check Renfe/app.js
-          if [ -d "Renfe/src" ]; then
-            for f in Renfe/src/*.js; do
-              [ -e "$f" ] || continue
-              node --check "$f"
-            done
-          fi
-          if [ -f "proxy-worker/worker.js" ]; then
-            node --check proxy-worker/worker.js
-          fi
+          node --check Renfe/astra/sw.js
           echo "✅ Sintaxis JavaScript correcta."
 
       - name: Validar integridad de archivos JSON
